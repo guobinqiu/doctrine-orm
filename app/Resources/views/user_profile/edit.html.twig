@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    <form action="{{ path }}" method="POST">
+        <div>
+            <fieldset>
+                <legend>Gender</legend>
+
+                <label for="user_profile_gender_0">Female</label>
+                <input id="user_profile_gender_0" type="radio" name="user_profile[gender]" value="f" {% if user_profile.gender == 'f' or user_profile.gender == null %}checked="checked"{% endif %} />
+
+                <label for="user_profile_gender_1">Male</label>
+                <input id="user_profile_gender_1" type="radio" name="user_profile[gender]" value="m" {% if user_profile.gender == 'm' %}checked="checked"{% endif %} />
+            </fieldset>
+        </div>
+
+        <div>
+            <label for="user_profile_birthday">Birthday</label>
+            <input id="user_profile_birthday" type="text" name="user_profile[birthday]" value="{{ user_profile.birthday|date('Y-m-d') }}" />
+        </div>
+
+        <div>
+            <input type="hidden" name="_method" value="{{ _method }}" />
+            <input type="submit" value="Save" />
+        </div>
+    </form>
+{% endblock %}

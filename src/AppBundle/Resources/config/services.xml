@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <services>
+        <!-- 参考http://stackoverflow.com/questions/12223176/how-to-inject-a-repository-into-a-service-in-symfony2 -->
+        <!--<service id="app.customer_repository"-->
+                 <!--factory-service="doctrine.orm.default_entity_manager"-->
+                 <!--factory-method="getRepository"-->
+                 <!--class="AppBundle\Repository\CustomerRepository">-->
+            <!--<argument>AppBundle\Entity\Customer</argument>-->
+        <!--</service>-->
+
+        <service id="app.customer_service" class="AppBundle\Service\CustomerService">
+            <!--<argument type="service" id="app.customer_repository" />-->
+            <argument type="service" id="doctrine.orm.entity_manager" />
+        </service>
+
+        <service id="app.user_service" class="AppBundle\Service\UserService">
+            <argument type="service" id="doctrine.orm.entity_manager" />
+        </service>
+
+        <service id="app.user_profile_service" class="AppBundle\Service\UserProfileService">
+            <argument type="service" id="doctrine.orm.entity_manager" />
+        </service>
+
+        <service id="app.order_service" class="AppBundle\Service\OrderService">
+            <argument type="service" id="doctrine.orm.entity_manager" />
+        </service>
+
+        <service id="app.group_service" class="AppBundle\Service\GroupService">
+            <argument type="service" id="doctrine.orm.entity_manager" />
+        </service>
+
+        <service id="app.user_group_service" class="AppBundle\Service\UserGroupService">
+            <argument type="service" id="doctrine.orm.entity_manager" />
+        </service>
+
+    </services>
+</container>

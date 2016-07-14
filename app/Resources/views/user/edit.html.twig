@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    <form action="/users/{{ user.id }}" method="POST">
+        <div>
+            <label for="user_name">Name</label>
+            <input id="user_name" type="text" name="user[name]" value="{{ user.name }}" />
+        </div>
+
+        <div>
+            <label for="user_email">Email</label>
+            <input id="user_email" type="text" name="user[email]" value="{{ user.email }}" />
+        </div>
+
+        <div>
+            <input type="hidden" name="_method" value="PUT" />
+            <input type="submit" value="Save" />
+        </div>
+    </form>
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+   <form action="/users/create" method="POST">
+       <div>
+           <label for="user_name">Name</label>
+           <input id="user_mobile" type="text" name="user[name]" />
+       </div>
+
+       <div>
+           <label for="user_email">Email</label>
+           <input id="user_email" type="text" name="user[email]" />
+       </div>
+
+        <div>
+            <input type="submit" value="Add User" />
+        </div>
+   </form>
+{% endblock %}
