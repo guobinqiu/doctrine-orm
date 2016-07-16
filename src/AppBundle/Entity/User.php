@@ -31,6 +31,11 @@ class User
     private $email;
 
     /**
+     * @ORM\Column(type="string", nullable=false, length=64)
+     */
+    private $password;
+
+    /**
      * cascade="remove"代表删除User对象的同时删除关联的UserProfile对象
      *
      * @ORM\OneToOne(targetEntity="UserProfile", mappedBy="user", cascade="remove")
@@ -100,6 +105,29 @@ class User
     public function getEmail()
     {
         return $this->email;
+    }
+
+    /**
+     * Set password
+     *
+     * @param string $password
+     * @return User
+     */
+    public function setPassword($password)
+    {
+        $this->password = $password;
+
+        return $this;
+    }
+
+    /**
+     * Get password
+     *
+     * @return string
+     */
+    public function getPassword()
+    {
+        return $this->password;
     }
 
     /**
