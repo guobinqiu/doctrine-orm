@@ -59,6 +59,7 @@ class UserController extends Controller
         $userService = $this->get("app.user_service");
         $userService->createUser($attributes);
 
+        $request->getSession()->getFlashBag()->add('success', '用户创建成功');
         return $this->redirect($this->generateUrl('users'));
     }
 
@@ -95,6 +96,7 @@ class UserController extends Controller
         $userService = $this->get("app.user_service");
         $userService->updateUser($id, $attributes);
 
+        $request->getSession()->getFlashBag()->add('success', '用户修改成功');
         return $this->redirect($this->generateUrl('users'));
     }
 

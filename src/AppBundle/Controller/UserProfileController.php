@@ -55,6 +55,7 @@ class UserProfileController extends Controller
         $userProfileService = $this->get("app.user_profile_service");
         $userProfileService->createUserProfile($user_id, $attributes);
 
+        $request->getSession()->getFlashBag()->add('success', '简介创建成功');
         return $this->redirect($this->generateUrl('users'));
     }
 
@@ -71,6 +72,7 @@ class UserProfileController extends Controller
         $userProfileService = $this->get("app.user_profile_service");
         $userProfileService->updateUserProfile($id, $attributes);
 
+        $request->getSession()->getFlashBag()->add('success', '简介修改成功');
         return $this->redirect($this->generateUrl('users'));
     }
 }

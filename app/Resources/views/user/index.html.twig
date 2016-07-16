@@ -1,5 +1,10 @@
 {% extends 'base.html.twig' %}
 {% block body %}
+
+    {% for flash_message in app.session.flashBag.get('success') %}
+        <div>{{ flash_message }}</div>
+    {% endfor %}
+
     <a href="{{ path('users_new') }}">Add User</a>
     <table>
         <thead>
