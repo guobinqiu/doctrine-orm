@@ -21,7 +21,7 @@
                 <td>{{ user.name }}</td>
                 <td>{{ user.email }}</td>
                 <td>{{ user.password }}</td>
-                <td><a href="/users/{{ user.id }}/edit">Update</a></td>
+                <td><a href="{{ path('users_edit', {'id': user.id}) }}">Update</a></td>
                 <td>
                     <!--参考http://symfony.com/doc/current/cookbook/routing/method_parameters.html-->
                     <form action="{{ path('users_delete', {'id': user.id}) }}" method="POST">
