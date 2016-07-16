@@ -2,14 +2,9 @@
 
 namespace AppBundle\Controller;
 
-use AppBundle\Entity\Customer;
-use AppBundle\Entity\User;
 use AppBundle\Entity\UserProfile;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class UserProfileController
@@ -24,8 +19,7 @@ use Symfony\Component\HttpFoundation\Response;
 class UserProfileController extends Controller
 {
     /**
-     * @Route("/", name="user_profiles")
-     * @Method("GET")
+     * @Route("/", name="user_profiles", methods={"GET"})
      */
     public function indexAction($user_id) {
         $user = $this->get('app.user_service')->findUserById($user_id);
@@ -49,8 +43,7 @@ class UserProfileController extends Controller
     }
 
     /**
-     * @Route("/", name="user_profiles_create")
-     * @Method("POST")
+     * @Route("/", name="user_profiles_create", methods={"POST"})
      */
     public function createAction($user_id) {
 
@@ -66,8 +59,7 @@ class UserProfileController extends Controller
     }
 
     /**
-     * @Route("/{id}", name="user_profiles_update")
-     * @Method("PUT")
+     * @Route("/{id}", name="user_profiles_update", methods={"PUT"})
      */
     public function updateAction($id) {
 

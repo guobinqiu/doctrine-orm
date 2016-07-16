@@ -2,11 +2,8 @@
 
 namespace AppBundle\Controller;
 
-use AppBundle\Entity\Customer;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -30,8 +27,7 @@ class UserController extends Controller
     /**
      * 显示全部user的页面
      *
-     * @Route("/", name="users")
-     * @Method("GET")
+     * @Route("/", name="users", methods={"GET"})
      */
     public function indexAction()
     {
@@ -42,8 +38,7 @@ class UserController extends Controller
     /**
      * 新增一个user的页面
      *
-     * @Route("/new", name="users_new")
-     * @Method("GET")
+     * @Route("/new", name="users_new", methods={"GET"})
      */
     public function newAction() {
         return $this->render('user/new.html.twig');
@@ -52,8 +47,7 @@ class UserController extends Controller
     /**
      * 往表里新增一个用户
      *
-     * @Route("/create", name="users_create")
-     * @Method("POST")
+     * @Route("/create", name="users_create", methods={"POST"})
      */
     public function createAction() {
 
@@ -71,8 +65,7 @@ class UserController extends Controller
     /**
      * 显示单个user的页面
      *
-     * @Route("/{id}", name="users_show")
-     * @Method("GET")
+     * @Route("/{id}", name="users_show", methods={"GET"})
      */
 //    public function showAction($id) {
 //    }
@@ -80,8 +73,7 @@ class UserController extends Controller
     /**
      * 编辑单个user的页面
      *
-     * @Route("/{id}/edit", name="users_edit")
-     * @Method("GET")
+     * @Route("/{id}/edit", name="users_edit", methods={"GET"})
      */
     public function editAction($id) {
         $user = $this->get('app.user_service')->findUserById($id);
@@ -91,8 +83,7 @@ class UserController extends Controller
     /**
      * 从表里修改一个存在的用户
      *
-     * @Route("/{id}", name="users_update")
-     * @Method("PUT")
+     * @Route("/{id}", name="users_update", methods={"PUT"})
      */
     public function updateAction($id) {
 
@@ -110,8 +101,7 @@ class UserController extends Controller
     /**
      * 从表里删除一个存在的用户
      *
-     * @Route("/{id}", name="users_delete")
-     * @Method("DELETE")
+     * @Route("/{id}", name="users_delete", methods={"DELETE"})
      */
     public function destroyAction($id) {
         $userService = $this->get("app.user_service");
