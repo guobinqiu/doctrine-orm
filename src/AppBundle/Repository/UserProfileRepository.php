@@ -19,7 +19,9 @@ class UserProfileRepository extends EntityRepository
 
     public function updateUserProfile(UserProfile $userProfile) {
         $em = $this->getEntityManager();
-        $em->merge($userProfile);
+        if (!$em->contains($userProfile)) {
+            throw new InvalidArgumentException('传入的参数不是一个持久化过的对象');
+        }
         $em->flush();
     }
 

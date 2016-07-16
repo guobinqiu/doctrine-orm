@@ -19,7 +19,9 @@ class UserRepository extends EntityRepository
 
     public function updateUser(User $user) {
         $em = $this->getEntityManager();
-        $em->merge($user);
+        if (!$em->contains($user)) {
+            throw new InvalidArgumentException('传入的参数不是一个持久化过的对象');
+        }
         $em->flush();
     }
 

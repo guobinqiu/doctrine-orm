@@ -3,6 +3,7 @@
 namespace AppBundle\Repository;
 
 use AppBundle\Entity\Customer;
+use Doctrine\Common\Proxy\Exception\InvalidArgumentException;
 use Doctrine\ORM\EntityRepository;
 
 /**
@@ -18,7 +19,9 @@ class CustomerRepository extends EntityRepository
 
     public function updateCustomer(Customer $customer) {
         $em = $this->getEntityManager();
-        $em->merge($customer);
+        if (!$em->contains($customer)) {
+            throw new InvalidArgumentException('传入的参数不是一个持久化过的对象');
+        }
         $em->flush(); //->开启事务->执行update->提交或回滚
     }
 

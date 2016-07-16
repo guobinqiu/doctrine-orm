@@ -18,7 +18,9 @@ class GroupRepository extends EntityRepository
 
     public function updateGroup(Group $group) {
         $em = $this->getEntityManager();
-        $em->merge($group);
+        if (!$em->contains($group)) {
+            throw new InvalidArgumentException('传入的参数不是一个持久化过的对象');
+        }
         $em->flush();
     }
 
