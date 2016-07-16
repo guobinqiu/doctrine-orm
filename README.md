@@ -1,5 +1,5 @@
 # Doctrine ORM 测试Demo
-该版本拥有完整的service层，代码量会比较多
+加了service层
 
 # 本地访问的几个入口链接如下：
 - http://localhost:8000/app_dev.php
