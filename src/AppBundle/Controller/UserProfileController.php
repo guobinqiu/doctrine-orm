@@ -23,7 +23,7 @@ class UserProfileController extends Controller
      * @Route("/", name="user_profiles", methods={"GET"})
      */
     public function indexAction($user_id) {
-        $user = $this->get('app.user_service')->findUserById($user_id);
+        $user = $this->getDoctrine()->getRepository('AppBundle:User')->find($user_id);
         $userProfile = $user->getUserProfile();
         if (!$userProfile) {
             $userProfile = new UserProfile();
@@ -50,8 +50,16 @@ class UserProfileController extends Controller
         //从post中取到提交参数
         $attributes = $request->request->get('user_profile');
 
-        $userProfileService = $this->get("app.user_profile_service");
-        $userProfileService->createUserProfile($user_id, $attributes);
+        $em = $this->getDoctrine()->getManager();
+        $user = $em->getRepository('AppBundle:User')->find($user_id);
+
+        $userProfile = new UserProfile();
+        $userProfile->setGender($attributes['gender']);
+        $userProfile->setBirthday(new \DateTime($attributes['birthday']));
+        $userProfile->setUser($user);
+
+        $em->persist($userProfile);
+        $em->flush();
 
         $request->getSession()->getFlashBag()->add('success', '简介创建成功');
         return $this->redirect($this->generateUrl('users'));
@@ -64,8 +72,13 @@ class UserProfileController extends Controller
         //从post中取到提交参数
         $attributes = $request->request->get('user_profile');
 
-        $userProfileService = $this->get("app.user_profile_service");
-        $userProfileService->updateUserProfile($id, $attributes);
+        $em = $this->getDoctrine()->getManager();
+
+        $userProfile = $em->getRepository('AppBundle:UserProfile')->find($id);
+        $userProfile->setGender($attributes['gender']);
+        $userProfile->setBirthday(new \DateTime($attributes['birthday']));
+
+        $em->flush();
 
         $request->getSession()->getFlashBag()->add('success', '简介修改成功');
         return $this->redirect($this->generateUrl('users'));

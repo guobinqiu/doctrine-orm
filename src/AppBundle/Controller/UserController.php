@@ -2,6 +2,7 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\User;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
@@ -31,7 +32,7 @@ class UserController extends Controller
      */
     public function indexAction()
     {
-        $users = $this->get('app.user_service')->findUsers();
+        $users = $this->getDoctrine()->getRepository('AppBundle:User')->findAll();
         return $this->render('user/index.html.twig', array('users' => $users));
     }
 
@@ -53,8 +54,14 @@ class UserController extends Controller
         //从post中取到提交参数
         $attributes = $request->request->get('user');
 
-        $userService = $this->get("app.user_service");
-        $userService->createUser($attributes);
+        $user = new User();
+        $user->setName($attributes['name']);
+        $user->setEmail($attributes['email']);
+        $user->setPassword($attributes['password']);
+
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($user);
+        $em->flush();
 
         $request->getSession()->getFlashBag()->add('success', '用户创建成功');
         return $this->redirect($this->generateUrl('users'));
@@ -74,7 +81,7 @@ class UserController extends Controller
      * @Route("/{id}/edit", name="users_edit", methods={"GET"})
      */
     public function editAction($id) {
-        $user = $this->get('app.user_service')->findUserById($id);
+        $user = $this->getDoctrine()->getRepository('AppBundle:User')->find($id);
         return $this->render('user/edit.html.twig', array('user' => $user));
     }
 
@@ -87,8 +94,11 @@ class UserController extends Controller
         //从post中取到提交参数
         $attributes = $request->request->get('user');
 
-        $userService = $this->get("app.user_service");
-        $userService->updateUser($id, $attributes);
+        $em = $this->getDoctrine()->getManager();
+        $user = $em->getRepository('AppBundle:User')->find($id);
+        $user->setName($attributes['name']);
+        $user->setEmail($attributes['email']);
+        $em->flush();
 
         $request->getSession()->getFlashBag()->add('success', '用户修改成功');
         return $this->redirect($this->generateUrl('users'));
@@ -100,37 +110,18 @@ class UserController extends Controller
      * @Route("/{id}", name="users_delete", methods={"DELETE"})
      */
     public function destroyAction($id) {
-        $userService = $this->get("app.user_service");
-        $userService->deleteUser($id);
+//        $user = $this->getDoctrine()->getRepository('AppBundle:User')->find($id);
+//        $em = $this->getDoctrine()->getManager();
+//        $em->remove($user);
+//        $em->flush();
+
+        //换成下面这种写法更加漂亮，不会改变事务的边界
+        //http://stackoverflow.com/questions/11846718/when-to-use-entity-manager-in-symfony2
+        $em = $this->getDoctrine()->getManager();
+        $user = $em->getRepository('AppBundle:User')->find($id);
+        $em->remove($user);
+        $em->flush();
+
         return $this->redirect($this->generateUrl('users'));
-    }
-
-
-    //////////////////////测试一对一双向关联
-
-    /**
-     * @Route("/getProfileByUser")
-     */
-    public function getProfileByUser() {
-        $user = $this->get('app.user_service')->first();
-        if (empty($user)) {
-            $url = "<a href='/users'>Add</a>";
-            return new Response("No user found. Go to {$url}");
-        }
-        $userProfile = $user->getUserProfile();
-        return new Response('Gender=' . $userProfile->getGender() . ', Birthday=' . $userProfile->getBirthday()->format('Y-m-d'));
-    }
-
-    /**
-     * @Route("/getUserByProfile")
-     */
-    public function getUserByProfile() {
-        $userProfile = $this->get('app.user_profile_service')->first();
-        if (empty($userProfile)) {
-            $url = "<a href='/users'>Add</a>";
-            return new Response("No user's profile found. Go to {$url}");
-        }
-        $user = $userProfile->getUser();
-        return new Response($user);
     }
 }
