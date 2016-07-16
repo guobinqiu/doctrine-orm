@@ -35,7 +35,7 @@ class UserProfileController extends Controller
             ));
             $_method = 'PUT';
         }
-        return $this->render('/user_profile/edit.html.twig', array(
+        return $this->render('user_profile/edit.html.twig', array(
             'user_profile' => $userProfile,
             'path' => $path,
             '_method' => $_method,

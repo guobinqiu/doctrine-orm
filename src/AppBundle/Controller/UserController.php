@@ -77,7 +77,7 @@ class UserController extends Controller
      */
     public function editAction($id) {
         $user = $this->get('app.user_service')->findUserById($id);
-        return $this->render('/user/edit.html.twig', array('user' => $user));
+        return $this->render('user/edit.html.twig', array('user' => $user));
     }
 
     /**
