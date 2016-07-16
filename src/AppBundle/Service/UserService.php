@@ -31,7 +31,6 @@ class UserService
         $user = $this->userRepository->find($id);
         $user->setName($attributes['name']);
         $user->setEmail($attributes['email']);
-        $user->setPassword($attributes['password']);
         $this->userRepository->updateUser($user);
     }
 
