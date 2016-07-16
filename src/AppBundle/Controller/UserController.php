@@ -31,7 +31,7 @@ class UserController extends Controller
      */
     public function indexAction()
     {
-        $users = $this->get('app.user_service')->getAllUsers();
+        $users = $this->get('app.user_service')->findUsers();
         return $this->render('user/index.html.twig', array('users' => $users));
     }
 
