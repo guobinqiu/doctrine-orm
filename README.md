@@ -1,5 +1,5 @@
 # Doctrine ORM 测试Demo
-比较Java的方式，是否可以实现的更加symfony一点？
+该版本拥有完整的service层，代码量会比较多
 
 # 本地访问的几个入口链接如下：
 - http://localhost:8000/app_dev.php
