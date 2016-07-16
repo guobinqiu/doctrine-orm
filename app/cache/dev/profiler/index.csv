@@ -1,8 +1,0 @@
-a9c527,::1,GET,http://localhost:8000/,1468484421,
-ae5d40,::1,GET,http://localhost:8000/users,1468484432,
-8526bb,::1,GET,http://localhost:8000/users/,1468484432,
-9fe2ed,::1,GET,http://localhost:8000/users/getProfileByUser,1468484448,
-a27d54,::1,GET,http://localhost:8000/users/getProfileByUser/,1468484453,
-1ed748,::1,GET,http://localhost:8000/users/getProfileByUser/,1468484453,
-d4667b,::1,GET,http://localhost:8000/,1468484462,
-9febf9,::1,GET,http://localhost:8000/,1468484464,
