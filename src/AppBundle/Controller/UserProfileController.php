@@ -5,6 +5,7 @@ namespace AppBundle\Controller;
 use AppBundle\Entity\UserProfile;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class UserProfileController
@@ -45,10 +46,7 @@ class UserProfileController extends Controller
     /**
      * @Route("/", name="user_profiles_create", methods={"POST"})
      */
-    public function createAction($user_id) {
-
-        $request= $this->getRequest();
-
+    public function createAction(Request $request, $user_id) {
         //从post中取到提交参数
         $attributes = $request->request->get('user_profile');
 
@@ -62,10 +60,7 @@ class UserProfileController extends Controller
     /**
      * @Route("/{id}", name="user_profiles_update", methods={"PUT"})
      */
-    public function updateAction($id) {
-
-        $request= $this->getRequest();
-
+    public function updateAction(Request $request, $id) {
         //从post中取到提交参数
         $attributes = $request->request->get('user_profile');
 

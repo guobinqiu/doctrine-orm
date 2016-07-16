@@ -4,6 +4,7 @@ namespace AppBundle\Controller;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -23,7 +24,6 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class UserController extends Controller
 {
-
     /**
      * 显示全部user的页面
      *
@@ -49,10 +49,7 @@ class UserController extends Controller
      *
      * @Route("/create", name="users_create", methods={"POST"})
      */
-    public function createAction() {
-
-        $request= $this->getRequest();
-
+    public function createAction(Request $request) {
         //从post中取到提交参数
         $attributes = $request->request->get('user');
 
@@ -86,10 +83,7 @@ class UserController extends Controller
      *
      * @Route("/{id}", name="users_update", methods={"PUT"})
      */
-    public function updateAction($id) {
-
-        $request= $this->getRequest();
-
+    public function updateAction(Request $request, $id) {
         //从post中取到提交参数
         $attributes = $request->request->get('user');
 
