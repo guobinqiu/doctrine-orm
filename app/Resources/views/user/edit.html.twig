@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 {% block body %}
-    <form action="/users/{{ user.id }}" method="POST">
+    <form action="{{ path('users_update', {'id': user.id}) }}" method="POST">
         <div>
             <label for="user_name">Name</label>
             <input id="user_name" type="text" name="user[name]" value="{{ user.name }}" />

@@ -14,6 +14,15 @@ use Symfony\Component\HttpFoundation\Response;
  * (Restful CRUD)
  *
  * @Route("/users")
+ *
+ * app/console router:debug|grep users
+ *
+ * users                           GET    ANY    ANY  /users/
+ * users_new                       GET    ANY    ANY  /users/new
+ * users_create                    POST   ANY    ANY  /users/create
+ * users_edit                      GET    ANY    ANY  /users/{id}/edit
+ * users_update                    PUT    ANY    ANY  /users/{id}
+ * users_delete                    DELETE ANY    ANY  /users/{id}
  */
 class UserController extends Controller
 {
@@ -21,7 +30,7 @@ class UserController extends Controller
     /**
      * 显示全部user的页面
      *
-     * @Route("/")
+     * @Route("/", name="users")
      * @Method("GET")
      */
     public function indexAction()
@@ -33,7 +42,7 @@ class UserController extends Controller
     /**
      * 新增一个user的页面
      *
-     * @Route("/new")
+     * @Route("/new", name="users_new")
      * @Method("GET")
      */
     public function newAction() {
@@ -43,7 +52,7 @@ class UserController extends Controller
     /**
      * 往表里新增一个用户
      *
-     * @Route("/create")
+     * @Route("/create", name="users_create")
      * @Method("POST")
      */
     public function createAction() {
@@ -56,13 +65,13 @@ class UserController extends Controller
         $userService = $this->get("app.user_service");
         $userService->createUser($attributes);
 
-        return $this->redirect('/users');
+        return $this->redirect($this->generateUrl('users'));
     }
 
     /**
      * 显示单个user的页面
      *
-     * @Route("/{id}")
+     * @Route("/{id}", name="users_show")
      * @Method("GET")
      */
 //    public function showAction($id) {
@@ -71,7 +80,7 @@ class UserController extends Controller
     /**
      * 编辑单个user的页面
      *
-     * @Route("/{id}/edit")
+     * @Route("/{id}/edit", name="users_edit")
      * @Method("GET")
      */
     public function editAction($id) {
@@ -82,7 +91,7 @@ class UserController extends Controller
     /**
      * 从表里修改一个存在的用户
      *
-     * @Route("/{id}")
+     * @Route("/{id}", name="users_update")
      * @Method("PUT")
      */
     public function updateAction($id) {
@@ -95,19 +104,19 @@ class UserController extends Controller
         $userService = $this->get("app.user_service");
         $userService->updateUser($id, $attributes);
 
-        return $this->redirect('/users');
+        return $this->redirect($this->generateUrl('users'));
     }
 
     /**
      * 从表里删除一个存在的用户
      *
-     * @Route("/{id}")
+     * @Route("/{id}", name="users_delete")
      * @Method("DELETE")
      */
     public function destroyAction($id) {
         $userService = $this->get("app.user_service");
         $userService->deleteUser($id);
-        return $this->redirect('/users');
+        return $this->redirect($this->generateUrl('users'));
     }
 
 

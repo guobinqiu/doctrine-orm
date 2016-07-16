@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 {% block body %}
-    <a href="/users/new">Add User</a>
+    <a href="{{ path('users_new') }}">Add User</a>
     <table>
         <thead>
             <tr>
@@ -17,12 +17,12 @@
                 <td><a href="/users/{{ user.id }}/edit">Update</a></td>
                 <td>
                     <!--参考http://symfony.com/doc/current/cookbook/routing/method_parameters.html-->
-                    <form action="/users/{{ user.id }}" method="POST">
+                    <form action="{{ path('users_delete', {'id': user.id}) }}" method="POST">
                         <input type="hidden" name="_method" value="DELETE" />
                         <input type="submit" value="Delete" onclick="return confirm('你真的确定要删除吗');" />
                     </form>
                 </td>
-                <td><a href="/users/{{ user.id }}/user_profiles/">Profile</a></td>
+                <td><a href="{{ path('user_profiles', {'user_id': user.id}) }}">Profile</a></td>
             </tr>
         {% endfor %}
         </tbody>

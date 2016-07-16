@@ -15,11 +15,16 @@ use Symfony\Component\HttpFoundation\Response;
  * Class UserProfileController
  *
  * @Route("/users/{user_id}/user_profiles")
+ *
+ * app/console router:debug|grep user_profiles
+ * user_profiles                   GET    ANY    ANY  /users/{user_id}/user_profiles/
+ * user_profiles_create            POST   ANY    ANY  /users/{user_id}/user_profiles/
+ * user_profiles_update            PUT    ANY    ANY  /users/{user_id}/user_profiles/{id}
  */
 class UserProfileController extends Controller
 {
     /**
-     * @Route("/")
+     * @Route("/", name="user_profiles")
      * @Method("GET")
      */
     public function indexAction($user_id) {
@@ -27,10 +32,13 @@ class UserProfileController extends Controller
         $userProfile = $user->getUserProfile();
         if (!$userProfile) {
             $userProfile = new UserProfile();
-            $path = '/users/' . $user_id . '/user_profiles/';
+            $path = $this->generateUrl('user_profiles_create', array('user_id' => $user_id));
             $_method = 'POST';
         } else {
-            $path = '/users/' . $user_id . '/user_profiles/' . $userProfile->getId();
+            $path = $this->generateUrl('user_profiles_update', array(
+                'user_id' => $user_id,
+                'id' => $userProfile->getId(),
+            ));
             $_method = 'PUT';
         }
         return $this->render('/user_profile/edit.html.twig', array(
@@ -41,7 +49,7 @@ class UserProfileController extends Controller
     }
 
     /**
-     * @Route("/")
+     * @Route("/", name="user_profiles_create")
      * @Method("POST")
      */
     public function createAction($user_id) {
@@ -54,11 +62,11 @@ class UserProfileController extends Controller
         $userProfileService = $this->get("app.user_profile_service");
         $userProfileService->createUserProfile($user_id, $attributes);
 
-        return $this->redirect('/users/');
+        return $this->redirect($this->generateUrl('users'));
     }
 
     /**
-     * @Route("/{id}")
+     * @Route("/{id}", name="user_profiles_update")
      * @Method("PUT")
      */
     public function updateAction($id) {
@@ -71,6 +79,6 @@ class UserProfileController extends Controller
         $userProfileService = $this->get("app.user_profile_service");
         $userProfileService->updateUserProfile($id, $attributes);
 
-        return $this->redirect('/users/');
+        return $this->redirect($this->generateUrl('users'));
     }
 }

@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 {% block body %}
-   <form action="/users/create" method="POST">
+   <form action="{{ path('users_create') }}" method="POST">
        <div>
            <label for="user_name">Name</label>
            <input id="user_mobile" type="text" name="user[name]" />
