@@ -28,13 +28,13 @@ class CustomerRepository extends EntityRepository
         $em->flush();
     }
 
-    public function getAllCustomers() {
+    public function findCustomers() {
         return $this->findAll();
     }
 
     //DQL方式
     //参考 http://docs.doctrine-project.org/projects/doctrine-orm/en/latest/reference/dql-doctrine-query-language.html
-    public function getAllCustomersWithDQL() {
+    public function findCustomersWithDQL() {
         $em = $this->getEntityManager();
         $query = $em->createQuery('SELECT c FROM AppBundle\Entity\Customer c');
         return $query->getResult(); // array of Customer objects
@@ -42,7 +42,7 @@ class CustomerRepository extends EntityRepository
 
     //DQL QueryBuilder方式
     //参考 http://docs.doctrine-project.org/projects/doctrine-orm/en/latest/reference/query-builder.html
-    public function getAllCustomersWithDQLQueryBuilder() {
+    public function findCustomersWithDQLQueryBuilder() {
 //        $qb = $this->createQueryBuilder();
 //        $qb->select('c')
 //            ->from('AppBundle\Entity\Customer', 'c');
@@ -56,7 +56,7 @@ class CustomerRepository extends EntityRepository
 
     //原生SQL方式
     //参考 http://docs.doctrine-project.org/projects/doctrine-dbal/en/latest/reference/data-retrieval-and-manipulation.html
-    public function getAllCustomersWithSQL() {
+    public function findCustomersWithSQL() {
         $conn = $this->getEntityManager()->getConnection();
 
 //        $stmt = $conn->prepare('select * from customers');
@@ -70,7 +70,7 @@ class CustomerRepository extends EntityRepository
 
     //原生SQL QueryBuilder方式
     //参考 http://docs.doctrine-project.org/projects/doctrine-dbal/en/latest/reference/query-builder.html
-    public function getAllCustomersWithSQLQueryBuilder() {
+    public function findCustomersWithSQLQueryBuilder() {
         $conn = $this->getEntityManager()->getConnection();
         $qb = $conn->createQueryBuilder();
         $qb->select('*')

@@ -51,29 +51,28 @@ class CustomerService
         $this->customerRepository->updateCustomer($customer);
     }
 
-    public function deleteCustomer($id) {
-        $customer = $this->customerRepository->find($id);
+    public function deleteCustomer(Customer $customer) {
         $this->customerRepository->deleteCustomer($customer);
     }
 
-    public function getAllCustomers() {
-        return $this->customerRepository->getAllCustomers();
+    public function findCustomers() {
+        return $this->customerRepository->findCustomers();
     }
 
-    public function getAllCustomersWithDQL() {
-        return $this->customerRepository->getAllCustomersWithDQL();
+    public function findCustomersWithDQL() {
+        return $this->customerRepository->findCustomersWithDQL();
     }
 
-    public function getAllCustomersWithDQLQueryBuilder() {
-        return $this->customerRepository->getAllCustomersWithDQLQueryBuilder();
+    public function findCustomersWithDQLQueryBuilder() {
+        return $this->customerRepository->findCustomersWithDQLQueryBuilder();
     }
 
-    public function getAllCustomersWithSQL(){
-        return $this->customerRepository->getAllCustomersWithSQL();
+    public function findCustomersWithSQL() {
+        return $this->customerRepository->findCustomersWithSQL();
     }
 
-    public function getAllCustomersWithSQLQueryBuilder() {
-        return $this->customerRepository->getAllCustomersWithSQLQueryBuilder();
+    public function findCustomersWithSQLQueryBuilder() {
+        return $this->customerRepository->findCustomersWithSQLQueryBuilder();
     }
 
     public function first() {

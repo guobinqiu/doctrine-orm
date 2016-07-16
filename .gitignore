@@ -1,3 +1,4 @@
 .idea/
-app/cache/
-app/logs/
+/app/cache/
+/app/logs/
+vendor/doctrine/orm/docs/en/_theme/

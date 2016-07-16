@@ -34,7 +34,7 @@ class UserRepository extends EntityRepository
         return $this->createQueryBuilder('u')->setMaxResults(1)->getQuery()->getOneOrNullResult();
     }
 
-    public function getAllUsers() {
+    public function findUsers() {
         return $this->findAll();
     }
 

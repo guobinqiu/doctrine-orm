@@ -47,13 +47,13 @@ class DefaultController extends Controller
 //
 //        //删除
 //        $customer = $customerDao->last();
-//        $customerDao->deleteCustomer($customer->getId());
+//        $customerDao->deleteCustomer($customer);
 //
-////        $customers = $customerDao->getAllCustomers();
-////        $customers = $customerDao->getAllCustomersWithDQL();
-////        $customers = $customerDao->getAllCustomersWithDQLQueryBuilder();
-////        $customers = $customerDao->getAllCustomersWithSQL();
-//        $customers = $customerDao->getAllCustomersWithSQLQueryBuilder();
+////        $customers = $customerDao->findCustomers();
+////        $customers = $customerDao->findCustomersWithDQL();
+////        $customers = $customerDao->findCustomersWithDQLQueryBuilder();
+////        $customers = $customerDao->findCustomersWithSQL();
+//        $customers = $customerDao->findCustomersWithSQLQueryBuilder();
 
         //重构到service里
         $customerService = $this->get('app.customer_service');
@@ -74,13 +74,13 @@ class DefaultController extends Controller
 
         //删除
         $customer = $customerService->last();
-        $customerService->deleteCustomer($customer->getId());
+        $customerService->deleteCustomer($customer);
 
-//        $customers = $customerService->getAllCustomers();
-//        $customers = $customerService->getAllCustomersWithDQL();
-//        $customers = $customerService->getAllCustomersWithQueryBuilder();
-//        $customers = $customerService->getAllCustomersWithSQL();
-        $customers = $customerService->getAllCustomersWithSQLQueryBuilder();
+//        $customers = $customerService->findCustomers();
+//        $customers = $customerService->findCustomersWithDQL();
+//        $customers = $customerService->findCustomersWithQueryBuilder();
+//        $customers = $customerService->findCustomersWithSQL();
+        $customers = $customerService->findCustomersWithSQLQueryBuilder();
 
         //下单
         $customer = $customerService->first();
@@ -131,7 +131,7 @@ class DefaultController extends Controller
         $groupService->createGroup($group);
 
         $group = $groupService->first();
-        $users = $userService->getAllUsers();
+        $users = $userService->findUsers();
         $groupService->addUsersToGroup($group, $users);
         ///////////////
 
