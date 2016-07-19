@@ -5,11 +5,8 @@ namespace AppBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * User
- *
- * @ORM\Entity(repositoryClass="AppBundle\Repository\UserRepository")
+ * @ORM\Entity
  * @ORM\Table(name="users")
- * @ORM\HasLifecycleCallbacks
  */
 class User
 {
@@ -26,35 +23,33 @@ class User
     private $name;
 
     /**
-     * @ORM\Column(type="string", nullable=false)
+     * @ORM\Column(type="string", nullable=true)
      */
     private $email;
 
     /**
-     * @ORM\Column(type="string", nullable=false, length=64)
+     * @ORM\Column(type="string", nullable=true)
      */
     private $password;
 
     /**
-     * cascade="remove"代表删除User对象的同时删除关联的UserProfile对象
+     * oauth user id
      *
-     * @ORM\OneToOne(targetEntity="UserProfile", mappedBy="user", cascade="remove")
+     * @ORM\Column(name="open_id", type="string", nullable=true)
      */
-    private $userProfile;
+    private $openId;
 
     /**
-     * cascade={"persist", "remove"}意味着
-     * 保存User对象的同时保存所有关联它的UserGroup对象
-     * 删除User对象的同时删除所有关联它的UserGroup对象
+     * oauth provider
      *
-     * @ORM\OneToMany(targetEntity="UserGroup", mappedBy="user", cascade={"persist", "remove"})
+     * @ORM\Column(type="string", nullable=true)
      */
-    private $userGroups;
+    private $provider;
 
     /**
      * Get id
      *
-     * @return integer
+     * @return integer 
      */
     public function getId()
     {
@@ -77,7 +72,7 @@ class User
     /**
      * Get name
      *
-     * @return string
+     * @return string 
      */
     public function getName()
     {
@@ -123,7 +118,7 @@ class User
     /**
      * Get password
      *
-     * @return string
+     * @return string 
      */
     public function getPassword()
     {
@@ -131,68 +126,48 @@ class User
     }
 
     /**
-     * Set userProfile
+     * Set openId
      *
-     * @param \AppBundle\Entity\UserProfile $userProfile
+     * @param string $openId
      * @return User
      */
-    public function setUserProfile(\AppBundle\Entity\UserProfile $userProfile)
+    public function setOpenId($openId)
     {
-        $this->userProfile = $userProfile;
+        $this->openId = $openId;
 
         return $this;
     }
 
     /**
-     * Get userProfile
+     * Get openId
      *
-     * @return \AppBundle\Entity\UserProfile 
+     * @return string 
      */
-    public function getUserProfile()
+    public function getOpenId()
     {
-        return $this->userProfile;
+        return $this->openId;
     }
 
     /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->userGroups = new \Doctrine\Common\Collections\ArrayCollection();
-    }
-
-    /**
-     * Add userGroups
+     * Set provider
      *
-     * @param \AppBundle\Entity\UserGroup $userGroups
+     * @param string $provider
      * @return User
      */
-    public function addUserGroup(\AppBundle\Entity\UserGroup $userGroups)
+    public function setProvider($provider)
     {
-        $this->userGroups[] = $userGroups;
+        $this->provider = $provider;
 
         return $this;
     }
 
     /**
-     * Remove userGroups
+     * Get provider
      *
-     * @param \AppBundle\Entity\UserGroup $userGroups
+     * @return string 
      */
-    public function removeUserGroup(\AppBundle\Entity\UserGroup $userGroups)
+    public function getProvider()
     {
-        $this->userGroups->removeElement($userGroups);
+        return $this->provider;
     }
-
-    /**
-     * Get userGroups
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getUserGroups()
-    {
-        return $this->userGroups;
-    }
-
-
 }

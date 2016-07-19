@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    <form action="{{ path('books_update', {'id': book.id}) }}" method="POST">
+        <div>
+            <label for="book_name">Name</label>
+            <input id="book_name" type="text" name="book[name]" value="{{ book.name }}" />
+        </div>
+
+        <div>
+            <label for="book_author">Author</label>
+            <input id="book_author" type="text" name="book[author]" value="{{ book.author }}" />
+        </div>
+
+        <div>
+            <label for="book_publisher">Publisher</label>
+            <input id="book_publisher" type="text" name="book[publisher]" value="{{ book.publisher }}" />
+        </div>
+
+        <div>
+            <input type="hidden" name="_method" value="PUT" />
+            <input type="submit" value="Save" />
+        </div>
+    </form>
+{% endblock %}

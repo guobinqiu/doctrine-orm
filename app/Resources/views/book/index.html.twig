@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+
+    {% for flash_message in app.session.flashBag.get('success') %}
+        <div>{{ flash_message }}</div>
+    {% endfor %}
+
+    <a href="{{ path('books_new') }}">Add</a>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Author</th>
+                <th>Publisher</th>
+                <th colspan="2">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for book in books %}
+            <tr>
+                <td>{{ book.name }}</td>
+                <td>{{ book.author }}</td>
+                <td>{{ book.publisher }}</td>
+                <td><a href="{{ path('books_edit', {'id': book.id}) }}">Edit</a></td>
+                <td>
+                    <!--参考http://symfony.com/doc/current/cookbook/routing/method_parameters.html-->
+                    <form action="{{ path('books_delete', {'id': book.id}) }}" method="POST">
+                        <input type="hidden" name="_method" value="DELETE" />
+                        <input type="submit" value="Delete" onclick="return confirm('Are you sure?');" />
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    total count: {{ books|length }}
+{% endblock %}
