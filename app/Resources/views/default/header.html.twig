@@ -1,0 +1,12 @@
+{% if current_user %}
+    <div>Welcome, {{ current_user.name }}!</div>
+    <div>
+        <!--参考http://symfony.com/doc/current/cookbook/routing/method_parameters.html-->
+        <form action="{{ path('users_logout') }}" method="POST">
+            <input type="hidden" name="_method" value="DELETE" />
+            <input type="submit" value="Logout" />
+        </form>
+    </div>
+{% else %}
+    <div><a href="{{ path('users_login') }}">Login</a></div>
+{% endif %}
