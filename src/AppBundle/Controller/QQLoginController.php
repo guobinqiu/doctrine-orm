@@ -10,7 +10,6 @@ class QQLoginController extends Controller
 {
     const CLIENT_ID = '101290951';
     const CLIENT_SECRET = 'fdb9b29d160948c8b7fb01a9a657f47e';
-    const REDIRECT_URI = 'http://demo2016.ngrok.cc/qq/login';
 
     /**
      * @Route("/qq/login", name="qq_login", methods={"GET"})
@@ -33,14 +32,14 @@ class QQLoginController extends Controller
 
             $openId = $this->getOpenId($token);
 
-            $qqUser = $this->getUserInfo($token, $openId);
+            $userInfo = $this->getUserInfo($token, $openId);
 
             $em = $this->getDoctrine()->getManager();
             $user = $em->getRepository('AppBundle:User')->findOneBy(array('openId' => $openId, 'provider' => 'QQ'));
 
             if ($user == null) {
                 $user = new User();
-                $user->setName($qqUser->nickname);
+                $user->setName($userInfo->nickname);
                 $user->setOpenId($openId);
                 $user->setProvider('QQ');
                 $em->persist($user);
@@ -73,7 +72,7 @@ class QQLoginController extends Controller
         $params = array(
             'response_type' => 'code', //授权类型，此值固定为“code”。
             'client_id' => self::CLIENT_ID, //请QQ登录成功后，分配给应用的appid。
-            'redirect_uri' => self::REDIRECT_URI, //成功授权后的回调地址，必须是注册appid时填写的主域名下的地址，建议设置为网站首页或网站的用户中心。注意需要将url进行URLEncode。
+            'redirect_uri' => $this->generateUrl('qq_login', array(), true), //成功授权后的回调地址，必须是注册appid时填写的主域名下的地址，建议设置为网站首页或网站的用户中心。注意需要将url进行URLEncode。
             'state' => $state, //client端的状态值。用于第三方应用防止CSRF攻击，成功授权后回调时会原样带回。请务必严格按照流程检查用户与state参数状态的绑定。
         );
 
@@ -88,7 +87,7 @@ class QQLoginController extends Controller
             'client_id' => self::CLIENT_ID, //申请QQ登录成功后，分配给网站的appid。
             'client_secret' => self::CLIENT_SECRET, //申请QQ登录成功后，分配给网站的appkey。
             'code' => $code, //上一步返回的authorization code。
-            'redirect_uri' => self::REDIRECT_URI //与上面一步中传入的redirect_uri保持一致。和code一起用于认证服务器验证信息来源。
+            'redirect_uri' => $this->generateUrl('qq_login', array(), true), //与上面一步中传入的redirect_uri保持一致。和code一起用于认证服务器验证信息来源。
         );
 
         $url = 'https://graph.qq.com/oauth2.0/token?' . http_build_query($params);
