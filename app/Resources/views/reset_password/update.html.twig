@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    <form action="{{ path('reset_password_update', {'id': id}) }}" method="POST">
+        <div>
+            <label for="password">New Password</label>
+            <input id="password" type="text" name="password" />
+        </div>
+
+        <div>
+            <input type="hidden" name="_method" value="PUT" />
+            <input type="submit" value="Update" />
+        </div>
+    </form>
+{% endblock %}

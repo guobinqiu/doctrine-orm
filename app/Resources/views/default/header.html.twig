@@ -8,5 +8,8 @@
         </form>
     </div>
 {% else %}
-    <div><a href="{{ path('users_login') }}">Login</a></div>
+    <div>
+        <a href="{{ path('users_login') }}">Login</a>
+        <a href="{{ path('registers_new') }}">Register</a>
+    </div>
 {% endif %}

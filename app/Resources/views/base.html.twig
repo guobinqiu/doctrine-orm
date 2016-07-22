@@ -8,9 +8,7 @@
         <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
     </head>
     <body>
-        {{ render(controller('AppBundle:Default:header')) }}
         {% block body %}{% endblock %}
         {% block javascripts %}{% endblock %}
-        {{ include('default/footer.html.twig') }}
     </body>
 </html>

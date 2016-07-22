@@ -1,5 +1,29 @@
 {% extends 'base.html.twig' %}
 {% block body %}
-    <a href="{{ path('qq_login') }}"><img src="{{ asset('bundles/framework/images/qq_login_logo.png') }}" /></a>
-    <a href="{{ path('weibo_login') }}"><img src="{{ asset('bundles/framework/images/weibo_login_logo.png') }}" /></a>
+    <form action="" method="POST">
+        <div>
+            <label for="email">Email</label>
+            <input id="email" type="text" name="email" />
+        </div>
+
+        <div>
+            <label for="password">Password</label>
+            <input type="password" name="password" />
+        </div>
+
+        <div>
+            <input type="submit" value="Login" />
+        </div>
+    </form>
+
+    <div>
+        <a href="{{ path('registers_new') }}">Register</a>
+        <a href="{{ path('reset_password_new') }}">Forgot password</a>
+    </div>
+
+    <div>
+        <a href="{{ path('qq_login') }}"><img src="{{ asset('bundles/framework/images/qq_login_logo.png') }}" /></a>
+        <a href="{{ path('weibo_login') }}"><img src="{{ asset('bundles/framework/images/weibo_login_logo.png') }}" /></a>
+    </div>
+
 {% endblock %}

@@ -3,5 +3,6 @@
     <meta property="qc:admins" content="5034124655720166672736337" />
 {% endblock %}
 {% block body %}
+    {{ render(controller('AppBundle:Default:header')) }}
     <div><a href="{{ path('books') }}">Books</a></div>
 {% endblock %}

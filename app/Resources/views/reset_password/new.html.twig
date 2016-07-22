@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+
+    {% for flash_message in app.session.flashBag.get('notice') %}
+        <div>{{ flash_message }}</div>
+    {% endfor %}
+
+    <form action="{{ path('reset_password_create') }}" method="POST">
+        <label for="email">Email</label>
+        <input id="email" type="text" name="email" />
+        <input type="submit" />
+    </form>
+{% endblock %}
