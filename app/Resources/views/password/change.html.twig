@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 {% block body %}
-    <form action="{{ path('password_update', {'reset_password_token': reset_password_token}) }}" method="POST">
+    <form action="{{ path('user_password_change', {'reset_password_token': reset_password_token}) }}" method="POST">
         <div>
             <label for="password">New Password</label>
             <input id="password" type="text" name="password" />

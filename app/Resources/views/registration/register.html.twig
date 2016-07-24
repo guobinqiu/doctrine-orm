@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 {% block body %}
-    <form action="{{ path('register_create') }}" method="POST">
+    <form action="{{ path('user_registration_check_email') }}" method="POST">
         <div>
             <label for="user_name">Name</label>
             <input id="user_name" type="text" name="user[name]" />
@@ -17,7 +17,7 @@
         </div>
 
         <div>
-            <input type="submit" value="Create" />
+            <input type="submit" />
         </div>
     </form>
 {% endblock %}

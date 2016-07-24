@@ -13,16 +13,20 @@ use Symfony\Component\HttpFoundation\Request;
 class UserController extends Controller
 {
     /**
-     * @Route("/login", name="user_login", methods={"GET", "POST"})
+     * @Route("/login", name="user", methods={"GET"})
+     */
+    public function indexAction()
+    {
+        return $this->render('user/login.html.twig');
+    }
+
+    /**
+     * @Route("/login", name="user_login", methods={"POST"})
      */
     public function loginAction(Request $request)
     {
         $email = $request->request->get('email');
         $password = $request->request->get('password');
-
-        if ($email == null || $password == null) {
-            return $this->render('user/login.html.twig');
-        }
 
         $user = $this->getDoctrine()->getRepository('AppBundle:User')->findOneBy(array('email' => $email));
 

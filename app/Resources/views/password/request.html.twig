@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 {% block body %}
-    <form action="{{ path('password_create') }}" method="POST">
+    <form action="{{ path('user_password_send_email') }}" method="POST">
         <label for="email">Email</label>
         <input id="email" type="text" name="email" />
         <input type="submit" />

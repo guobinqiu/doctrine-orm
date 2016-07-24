@@ -12,17 +12,17 @@ use Symfony\Component\HttpFoundation\Request;
 class PasswordController extends Controller
 {
     /**
-     * @Route("/new", name="password_new", methods={"GET"})
+     * @Route("/request", name="user_password_request", methods={"GET"})
      */
-    public function inputEmailAction()
+    public function requestAction()
     {
-        return $this->render('password/input_email.html.twig');
+        return $this->render('password/request.html.twig');
     }
 
     /**
-     * @Route("/create", name="password_create", methods={"POST"})
+     * @Route("/send_email", name="user_password_send_email", methods={"POST"})
      */
-    public function sendResetPasswordEmailAction(Request $request)
+    public function sendEmailAction(Request $request)
     {
         $email = $request->request->get('email');
 
@@ -31,7 +31,7 @@ class PasswordController extends Controller
         $user = $em->getRepository('AppBundle:User')->findOneBy(array('email' => $email));
 
         if ($user == null) {
-            return $this->redirect($this->generateUrl('password_new'));
+            return $this->redirect($this->generateUrl('user_password_request'));
         }
 
         $resetPasswordToken = md5($user->getId() . $user->getEmail() . $user->getPassword());
@@ -41,10 +41,7 @@ class PasswordController extends Controller
         $em->flush();
 
         //发邮件
-        $emailBody = $this->renderView('password/reset_password_email.html.twig', array(
-            'email' => $email,
-            'reset_password_token' => $resetPasswordToken
-        ));
+        $emailBody = $this->renderView('password/reset_email.html.twig', array('user' => $user));
         $message = \Swift_Message::newInstance()
             ->setSubject('91问问-帐号密码重置')
             ->setFrom('cs@91wenwen.net')
@@ -54,13 +51,13 @@ class PasswordController extends Controller
         $mailer = $this->container->get('mailer');
         $mailer->send($message);
 
-        return $this->redirect($this->generateUrl('password_new'));
+        return $this->redirect($this->generateUrl('user_password_request'));
     }
 
     /**
-     * @Route("/edit", name="password_edit", methods={"GET"})
+     * @Route("/check_email", name="user_password_check_email", methods={"GET"})
      */
-    public function verifyResetPasswordTokenAction(Request $request)
+    public function checkEmailAction(Request $request)
     {
         $resetPasswordToken = $request->query->get('reset_password_token');
 
@@ -69,20 +66,20 @@ class PasswordController extends Controller
             ->findOneBy(array('resetPasswordToken' => $resetPasswordToken));
 
         if ($user == null) {
-            return $this->redirect($this->generateUrl('password_new'));
+            return $this->redirect($this->generateUrl('user_password_request'));
         }
 
         if ($user->isResetPasswordTokenExpired()) {
-            return $this->redirect($this->generateUrl('password_new'));
+            return $this->redirect($this->generateUrl('user_password_request'));
         }
 
-        return $this->render('password/edit.html.twig', array('reset_password_token' => $resetPasswordToken));
+        return $this->render('password/change.html.twig', array('reset_password_token' => $resetPasswordToken));
     }
 
     /**
-     * @Route("/update", name="password_update", methods={"PUT"})
+     * @Route("/change", name="user_password_change", methods={"PUT"})
      */
-    public function updateAction(Request $request)
+    public function changeAction(Request $request)
     {
         $resetPasswordToken = $request->query->get('reset_password_token');
 
@@ -98,14 +95,14 @@ class PasswordController extends Controller
         $user->setResetPasswordToken(null);
         $em->flush();
 
-        return $this->redirect($this->generateUrl('password_success'));
+        return $this->redirect($this->generateUrl('user_password_changed'));
     }
 
     /**
-     * @Route("/success", name="password_success", methods={"GET"})
+     * @Route("/changed", name="user_password_changed", methods={"GET"})
      */
-    public function showSuccessAction()
+    public function changedAction()
     {
-        return $this->render('password/success.html.twig');
+        return $this->render('password/changed.html.twig');
     }
 }

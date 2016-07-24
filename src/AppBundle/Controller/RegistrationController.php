@@ -8,22 +8,22 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * @Route("/user")
+ * @Route("/user/registration")
  */
 class RegistrationController extends Controller
 {
     /**
-     * @Route("/reg", name="register_new", methods={"GET"})
+     * @Route("/register", name="user_registration_register", methods={"GET"})
      */
-    public function newAction()
+    public function registerAction()
     {
-        return $this->render('registration/reg.html.twig');
+        return $this->render('registration/register.html.twig');
     }
 
     /**
-     * @Route("/regSuccess", name="register_create", methods={"POST"})
+     * @Route("/check_email", name="user_registration_check_email", methods={"POST"})
      */
-    public function sendConfirmationEmailAction(Request $request)
+    public function checkEmailAction(Request $request)
     {
         $attributes = $request->request->get('user');
 
@@ -52,10 +52,7 @@ class RegistrationController extends Controller
         $em->flush();
 
         //发邮件
-        $emailBody = $this->renderView('registration/confirmation_email.html.twig', array(
-            'email' => $email,
-            'confirmation_token' => $confirmationToken,
-        ));
+        $emailBody = $this->renderView('registration/confirmation_email.html.twig', array('user' => $user));
 
         $message = \Swift_Message::newInstance()
             ->setSubject('[91问问调查网] 请点击链接完成注册，开始有奖问卷调查')
@@ -66,29 +63,29 @@ class RegistrationController extends Controller
         $mailer = $this->container->get('mailer');
         $mailer->send($message);
 
-        return $this->render('registration/regSuccess.html.twig', array('email' => $email));
+        return $this->render('registration/checkEmail.html.twig', array('user' => $user));
     }
 
     /**
-     * @Route("/regActive", name="register_active", methods={"GET"})
+     * @Route("/confirm", name="user_registration_confirm", methods={"GET"})
      */
-    public function activeAction(Request $request)
+    public function confirmAction(Request $request)
     {
         $confirmationToken = $request->query->get('confirmation_token');
 
         if ($confirmationToken == null) {
-            $this->redirect($this->generateUrl('users_login'));
+            return $this->redirect($this->generateUrl('user_login'));
         }
 
         $em = $this->getDoctrine()->getManager();
         $user = $em->getRepository('AppBundle:User')->findOneBy(array('confirmationToken' => $confirmationToken));
 
         if ($user == null) {
-            $this->redirect($this->generateUrl('users_login'));
+            return $this->redirect($this->generateUrl('user_login'));
         }
 
         if ($user->isConfirmationTokenExpired()) {
-            $this->redirect($this->generateUrl('users_login'));
+            return $this->redirect($this->generateUrl('user_login'));
         }
 
         $user->setConfirmedAt(new \DateTime());
@@ -97,6 +94,16 @@ class RegistrationController extends Controller
 
         $request->getSession()->set('id', $user->getId());
 
-        return $this->render('registration/success.html.twig', array('email' => $user->getEmail()));
+        return $this->redirect($this->generateUrl('user_registration_confirmed'));
+    }
+
+    /**
+     * @Route("/confirmed", name="user_registration_confirmed", methods={"GET"})
+     */
+    public function comfirmedAction(Request $request)
+    {
+        $id = $request->getSession()->get('id');
+        $user = $this->getDoctrine()->getRepository('AppBundle:User')->find($id);
+        return $this->render('registration/confirmed.html.twig', array('user' => $user));
     }
 }
