@@ -19,52 +19,46 @@ class WeiboLoginController extends Controller
      */
     public function loginAction(Request $request)
     {
-        try {
-            $code = $request->query->get('code');
+        $code = $request->query->get('code');
 
-            if ($code == null) {
-                return $this->getAuthorizationCode($request);
-            }
+        if ($code == null) {
+            return $this->getAuthorizationCode($request);
+        }
 
-            $state = $request->query->get('state');
-            if ($state != $request->getSession()->get('state')) {
-                throw new \RuntimeException('The state does not match. You may be a victim of CSRF.');
-            }
-
-            $token = $this->getAccessToken($code);
-
-            $openId = $this->getOpenId($token);
-
-            $userInfo = $this->getUserInfo($token, $openId);
-
-            $em = $this->getDoctrine()->getManager();
-            $user = $em->getRepository('AppBundle:User')->findOneBy(array('openId' => $openId, 'provider' => 'weibo'));
-
-            if ($user == null) {
-                $user = new User();
-                $user->setName($userInfo->screen_name);
-                $user->setOpenId($openId);
-                $user->setProvider('weibo');
-                $em->persist($user);
-                $em->flush();
-            }
-
-            $session = $request->getSession();
-            $session->set('id', $user->getId());
-
-            if ($session->get('back_url') != null) {
-                $back_url = $session->get('back_url');
-                $session->remove('back_url');
-                return $this->redirect($back_url);
-            }
-
-            return $this->redirect($this->generateUrl('homepage'));
-
-        } catch(\Exception $e) {
-            $logger = $this->container->get('logger');
-            $logger->error($e->getMessage());
+        $state = $request->query->get('state');
+        if ($state != $request->getSession()->get('state')) {
+            $this->container->get('logger')->error('The state does not match. You may be a victim of CSRF.');
             return $this->redirect($this->generateUrl('users_login'));
         }
+
+        $token = $this->getAccessToken($code);
+
+        $openId = $this->getOpenId($token);
+
+        $userInfo = $this->getUserInfo($token, $openId);
+
+        $em = $this->getDoctrine()->getManager();
+        $user = $em->getRepository('AppBundle:User')->findOneBy(array('openId' => $openId, 'provider' => 'weibo'));
+
+        if ($user == null) {
+            $user = new User();
+            $user->setName($userInfo->screen_name);
+            $user->setOpenId($openId);
+            $user->setProvider('weibo');
+            $em->persist($user);
+            $em->flush();
+        }
+
+        $session = $request->getSession();
+        $session->set('id', $user->getId());
+
+        if ($session->get('back_url') != null) {
+            $back_url = $session->get('back_url');
+            $session->remove('back_url');
+            return $this->redirect($back_url);
+        }
+
+        return $this->redirect($this->generateUrl('homepage'));
     }
 
     //http://open.weibo.com/wiki/Oauth2/authorize

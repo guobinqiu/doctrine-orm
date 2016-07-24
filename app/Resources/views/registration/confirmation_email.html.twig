@@ -2,7 +2,7 @@
 
 您离注册成功只差最后一步了！请点击链接激活您的帐号。<br/>
 
-{% set link = url('registers_check', {'token': token}) %}
+{% set link = url('register_active', {'confirmation_token': confirmation_token}) %}
 <a href="{{ link }}" target="_blank">{{ link }}</a><br/>
 
 如果以上链接无法点击，请将它复制到你的浏览器地址栏中进入访问，该链接24小时内有效。

@@ -8,12 +8,12 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * @Route("/users")
+ * @Route("/user")
  */
 class UserController extends Controller
 {
     /**
-     * @Route("/login", name="users_login", methods={"GET", "POST"})
+     * @Route("/login", name="user_login", methods={"GET", "POST"})
      */
     public function loginAction(Request $request)
     {
@@ -48,7 +48,7 @@ class UserController extends Controller
     }
 
     /**
-     * @Route("/logout", name="users_logout", methods={"DELETE"})
+     * @Route("/logout", name="user_logout", methods={"DELETE"})
      */
     public function logoutAction(Request $request)
     {

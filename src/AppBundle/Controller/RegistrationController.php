@@ -8,22 +8,22 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * @Route("/registers")
+ * @Route("/user")
  */
 class RegistrationController extends Controller
 {
     /**
-     * @Route("/new", name="registers_new", methods={"GET"})
+     * @Route("/reg", name="register_new", methods={"GET"})
      */
     public function newAction()
     {
-        return $this->render('registration/new.html.twig');
+        return $this->render('registration/reg.html.twig');
     }
 
     /**
-     * @Route("/create", name="registers_create", methods={"POST"})
+     * @Route("/regSuccess", name="register_create", methods={"POST"})
      */
-    public function createAction(Request $request)
+    public function sendConfirmationEmailAction(Request $request)
     {
         $attributes = $request->request->get('user');
 
@@ -52,9 +52,9 @@ class RegistrationController extends Controller
         $em->flush();
 
         //发邮件
-        $emailBody = $this->renderView('registration/notification.html.twig', array(
+        $emailBody = $this->renderView('registration/confirmation_email.html.twig', array(
             'email' => $email,
-            'token' => $confirmationToken,
+            'confirmation_token' => $confirmationToken,
         ));
 
         $message = \Swift_Message::newInstance()
@@ -66,22 +66,22 @@ class RegistrationController extends Controller
         $mailer = $this->container->get('mailer');
         $mailer->send($message);
 
-        return $this->render('registration/after_email_sent.html.twig', array('email' => $email));
+        return $this->render('registration/regSuccess.html.twig', array('email' => $email));
     }
 
     /**
-     * @Route("/check", name="registers_check", methods={"GET"})
+     * @Route("/regActive", name="register_active", methods={"GET"})
      */
-    public function checkAction(Request $request)
+    public function activeAction(Request $request)
     {
-        $token = $request->query->get('token');
+        $confirmationToken = $request->query->get('confirmation_token');
 
-        if ($token == null) {
+        if ($confirmationToken == null) {
             $this->redirect($this->generateUrl('users_login'));
         }
 
         $em = $this->getDoctrine()->getManager();
-        $user = $em->getRepository('AppBundle:User')->findOneBy(array('confirmationToken' => $token));
+        $user = $em->getRepository('AppBundle:User')->findOneBy(array('confirmationToken' => $confirmationToken));
 
         if ($user == null) {
             $this->redirect($this->generateUrl('users_login'));

@@ -16,52 +16,46 @@ class QQLoginController extends Controller
      */
     public function loginAction(Request $request)
     {
-        try {
-            $code = $request->query->get('code');
+        $code = $request->query->get('code');
 
-            if ($code == null) {
-                return $this->getAuthorizationCode($request);
-            }
+        if ($code == null) {
+            return $this->getAuthorizationCode($request);
+        }
 
-            $state = $request->query->get('state');
-            if ($state != $request->getSession()->get('state')) {
-                throw new \RuntimeException('The state does not match. You may be a victim of CSRF.');
-            }
-
-            $token = $this->getAccessToken($code);
-
-            $openId = $this->getOpenId($token);
-
-            $userInfo = $this->getUserInfo($token, $openId);
-
-            $em = $this->getDoctrine()->getManager();
-            $user = $em->getRepository('AppBundle:User')->findOneBy(array('openId' => $openId, 'provider' => 'QQ'));
-
-            if ($user == null) {
-                $user = new User();
-                $user->setName($userInfo->nickname);
-                $user->setOpenId($openId);
-                $user->setProvider('QQ');
-                $em->persist($user);
-                $em->flush();
-            }
-
-            $session = $request->getSession();
-            $session->set('id', $user->getId());
-
-            if ($session->get('back_url') != null) {
-                $back_url = $session->get('back_url');
-                $session->remove('back_url');
-                return $this->redirect($back_url);
-            }
-
-            return $this->redirect($this->generateUrl('homepage'));
-
-        } catch(\Exception $e) {
-            $logger = $this->container->get('logger');
-            $logger->error($e->getMessage());
+        $state = $request->query->get('state');
+        if ($state != $request->getSession()->get('state')) {
+            $this->container->get('logger')->error('The state does not match. You may be a victim of CSRF.');
             return $this->redirect($this->generateUrl('users_login'));
         }
+
+        $token = $this->getAccessToken($code);
+
+        $openId = $this->getOpenId($token);
+
+        $userInfo = $this->getUserInfo($token, $openId);
+
+        $em = $this->getDoctrine()->getManager();
+        $user = $em->getRepository('AppBundle:User')->findOneBy(array('openId' => $openId, 'provider' => 'QQ'));
+
+        if ($user == null) {
+            $user = new User();
+            $user->setName($userInfo->nickname);
+            $user->setOpenId($openId);
+            $user->setProvider('QQ');
+            $em->persist($user);
+            $em->flush();
+        }
+
+        $session = $request->getSession();
+        $session->set('id', $user->getId());
+
+        if ($session->get('back_url') != null) {
+            $back_url = $session->get('back_url');
+            $session->remove('back_url');
+            return $this->redirect($back_url);
+        }
+
+        return $this->redirect($this->generateUrl('homepage'));
     }
 
     private function getAuthorizationCode(Request $request)
@@ -98,7 +92,8 @@ class QQLoginController extends Controller
         //strpos这个方法tmd太不爽，找到了会返回int 0，找不到会返回boolean false，false又等于0，那到底算找到还是没找到呢
         //http://php.net/manual/en/function.strpos.php
         if (strpos($resBody, 'callback') !== false) {
-            throw new \RuntimeException($resBody);
+            $this->container->get('logger')->error($resBody);
+            return $this->redirect($this->generateUrl('users_login'));
         }
 
         //没有错误返回类似access_token=CEF4918E9614F9C1307DCA3FFC32BE55&expires_in=7776000&refresh_token=A6E855EB50CCB6F14BB37D87D413550B
