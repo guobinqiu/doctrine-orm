@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 {% block body %}
-    <form action="" method="POST">
+    <form action="{{ path('user_login') }}" method="POST">
         <div>
             <label for="email">Email</label>
             <input id="email" type="text" name="email" />

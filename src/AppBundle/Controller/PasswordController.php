@@ -4,6 +4,7 @@ namespace AppBundle\Controller;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -31,7 +32,7 @@ class PasswordController extends Controller
         $user = $em->getRepository('AppBundle:User')->findOneBy(array('email' => $email));
 
         if ($user == null) {
-            return $this->redirect($this->generateUrl('user_password_request'));
+            return new JsonResponse(array('error' => true, 'message' => '邮件不存在'), 404);
         }
 
         $resetPasswordToken = md5($user->getId() . $user->getEmail() . $user->getPassword());
@@ -41,7 +42,7 @@ class PasswordController extends Controller
         $em->flush();
 
         //发邮件
-        $emailBody = $this->renderView('password/reset_email.html.twig', array('user' => $user));
+        $emailBody = $this->renderView('password/reset_password_email.html.twig', array('user' => $user));
         $message = \Swift_Message::newInstance()
             ->setSubject('91问问-帐号密码重置')
             ->setFrom('cs@91wenwen.net')
@@ -51,13 +52,13 @@ class PasswordController extends Controller
         $mailer = $this->container->get('mailer');
         $mailer->send($message);
 
-        return $this->redirect($this->generateUrl('user_password_request'));
+        return new JsonResponse(array('error' => false, 'message' => '邮件已发送'), 200);
     }
 
     /**
-     * @Route("/check_email", name="user_password_check_email", methods={"GET"})
+     * @Route("/edit", name="user_password_edit", methods={"GET"})
      */
-    public function checkEmailAction(Request $request)
+    public function editAction(Request $request)
     {
         $resetPasswordToken = $request->query->get('reset_password_token');
 
@@ -73,13 +74,13 @@ class PasswordController extends Controller
             return $this->redirect($this->generateUrl('user_password_request'));
         }
 
-        return $this->render('password/change.html.twig', array('reset_password_token' => $resetPasswordToken));
+        return $this->render('password/edit.html.twig', array('reset_password_token' => $resetPasswordToken));
     }
 
     /**
-     * @Route("/change", name="user_password_change", methods={"PUT"})
+     * @Route("/update", name="user_password_update", methods={"PUT"})
      */
-    public function changeAction(Request $request)
+    public function updateAction(Request $request)
     {
         $resetPasswordToken = $request->query->get('reset_password_token');
 
@@ -95,14 +96,14 @@ class PasswordController extends Controller
         $user->setResetPasswordToken(null);
         $em->flush();
 
-        return $this->redirect($this->generateUrl('user_password_changed'));
+        return $this->redirect($this->generateUrl('user_password_updated'));
     }
 
     /**
-     * @Route("/changed", name="user_password_changed", methods={"GET"})
+     * @Route("/updated", name="user_password_updated", methods={"GET"})
      */
-    public function changedAction()
+    public function updatedAction()
     {
-        return $this->render('password/changed.html.twig');
+        return $this->render('password/updated.html.twig');
     }
 }

@@ -9,6 +9,6 @@ parameters:
     mailer_transport: smtp
     mailer_host: prod-cn-smtp.webpower.asia
     mailer_user: 91wenwen-signup
-    mailer_password:
+    mailer_password: Na6pK+Uwe7
     locale: en
     secret: 0ab5b29165124fca4695186ea6fe59f3c69ef933

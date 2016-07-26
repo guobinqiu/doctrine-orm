@@ -31,12 +31,12 @@ class UserController extends Controller
         $user = $this->getDoctrine()->getRepository('AppBundle:User')->findOneBy(array('email' => $email));
 
         if ($user == null) {
-            return $this->render('user/login.html.twig');
+            return $this->redirect($this->generateUrl('user'));
         }
 
         // http://php.net/manual/en/function.password-verify.php
         if (!password_verify($password, $user->getPassword())) {
-            return $this->render('user/login.html.twig');
+            return $this->redirect($this->generateUrl('user'));
         }
 
         $session = $request->getSession();
