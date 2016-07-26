@@ -13,17 +13,17 @@ use Symfony\Component\HttpFoundation\Request;
 class UserController extends Controller
 {
     /**
-     * @Route("/login", name="user", methods={"GET"})
+     * @Route("/login", name="user_login", methods={"GET"})
      */
-    public function indexAction()
+    public function loginAction()
     {
         return $this->render('user/login.html.twig');
     }
 
     /**
-     * @Route("/login", name="user_login", methods={"POST"})
+     * @Route("/login", name="user_check_login", methods={"POST"})
      */
-    public function loginAction(Request $request)
+    public function checkLoginCheckAction(Request $request)
     {
         $email = $request->request->get('email');
         $password = $request->request->get('password');
@@ -31,12 +31,12 @@ class UserController extends Controller
         $user = $this->getDoctrine()->getRepository('AppBundle:User')->findOneBy(array('email' => $email));
 
         if ($user == null) {
-            return $this->redirect($this->generateUrl('user'));
+            return $this->redirect($this->generateUrl('user_login'));
         }
 
         // http://php.net/manual/en/function.password-verify.php
         if (!password_verify($password, $user->getPassword())) {
-            return $this->redirect($this->generateUrl('user'));
+            return $this->redirect($this->generateUrl('user_login'));
         }
 
         $session = $request->getSession();
@@ -57,6 +57,6 @@ class UserController extends Controller
     public function logoutAction(Request $request)
     {
         $request->getSession()->set('id', null);
-        return $this->redirect($this->generateUrl('homepage'));
+        return $this->redirect($this->generateUrl('user_login'));
     }
 }

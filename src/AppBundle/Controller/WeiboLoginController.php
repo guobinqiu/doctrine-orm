@@ -7,28 +7,51 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 
+//http://open.weibo.com/
 //http://open.weibo.com/wiki/%E6%8E%88%E6%9D%83%E6%9C%BA%E5%88%B6
 //http://open.weibo.com/wiki/%E5%BE%AE%E5%8D%9AAPI#.E7.94.A8.E6.88.B7
+//http://demo2016.ngrok.cc/weibo/login_callback
 class WeiboLoginController extends Controller
 {
     const CLIENT_ID = '3163097902';
     const CLIENT_SECRET = 'af3e112c53a2357b201f3ddd6c8e69e7';
 
     /**
+     * http://open.weibo.com/wiki/Oauth2/authorize
+     *
      * @Route("/weibo/login", name="weibo_login", methods={"GET"})
      */
     public function loginAction(Request $request)
     {
+        $state = md5(uniqid(rand(), true));
+        $request->getSession()->set('state', $state);
+
+        $params = array(
+            'client_id' => self::CLIENT_ID,
+            'redirect_uri' => $this->generateUrl('weibo_login_callback', array(), true),
+            'state' => $state,
+        );
+
+        $url = 'https://api.weibo.com/oauth2/authorize?' . http_build_query($params);
+        return $this->redirect($url);
+    }
+
+    /**
+     * @Route("/weibo/login_callback", name="weibo_login_callback", methods={"GET"})
+     */
+    public function loginCallbackAction(Request $request)
+    {
         $code = $request->query->get('code');
 
         if ($code == null) {
-            return $this->getAuthorizationCode($request);
+            $this->container->get('logger')->error('No code found');
+            return $this->redirect($this->generateUrl('user_login'));
         }
 
         $state = $request->query->get('state');
         if ($state != $request->getSession()->get('state')) {
             $this->container->get('logger')->error('The state does not match. You may be a victim of CSRF.');
-            return $this->redirect($this->generateUrl('users_login'));
+            return $this->redirect($this->generateUrl('user_login'));
         }
 
         $token = $this->getAccessToken($code);
@@ -61,22 +84,6 @@ class WeiboLoginController extends Controller
         return $this->redirect($this->generateUrl('homepage'));
     }
 
-    //http://open.weibo.com/wiki/Oauth2/authorize
-    private function getAuthorizationCode(Request $request)
-    {
-        $state = md5(uniqid(rand(), true));
-        $request->getSession()->set('state', $state);
-
-        $params = array(
-            'client_id' => self::CLIENT_ID,
-            'redirect_uri' => $this->generateUrl('weibo_login', array(), true),
-            'state' => $state,
-        );
-
-        $url = 'https://api.weibo.com/oauth2/authorize?' . http_build_query($params);
-        return $this->redirect($url);
-    }
-
     //http://open.weibo.com/wiki/Oauth2/access_token
     private function getAccessToken($code)
     {
@@ -88,7 +95,7 @@ class WeiboLoginController extends Controller
             'client_id' => self::CLIENT_ID,
             'client_secret' => self::CLIENT_SECRET,
             'code' => $code,
-            'redirect_uri' => $this->generateUrl('weibo_login', array(), true),
+            'redirect_uri' => $this->generateUrl('weibo_login_callback', array(), true),
         ));
         $res = $request->send();
 
