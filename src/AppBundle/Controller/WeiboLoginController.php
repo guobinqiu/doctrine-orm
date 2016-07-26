@@ -21,7 +21,7 @@ class WeiboLoginController extends Controller
      *
      * @Route("/weibo/login", name="weibo_login", methods={"GET"})
      */
-    public function loginAction(Request $request)
+    public function grantAction(Request $request)
     {
         $state = md5(uniqid(rand(), true));
         $request->getSession()->set('state', $state);
@@ -44,7 +44,7 @@ class WeiboLoginController extends Controller
         $code = $request->query->get('code');
 
         if ($code == null) {
-            $this->container->get('logger')->error('No code found');
+            $this->container->get('logger')->error('Grant was cancelled');
             return $this->redirect($this->generateUrl('user_login'));
         }
 

@@ -19,7 +19,7 @@ class QQLoginController extends Controller
     /**
      * @Route("/qq/login", name="qq_login", methods={"GET"})
      */
-    public function loginAction(Request $request)
+    public function grantAction(Request $request)
     {
         $state = md5(uniqid(rand(), true));
         $request->getSession()->set('state', $state);
@@ -44,7 +44,7 @@ class QQLoginController extends Controller
         $code = $request->query->get('code');
 
         if ($code == null) {
-            $this->container->get('logger')->error('No code found');
+            $this->container->get('logger')->error('Grant was cancelled');
             return $this->redirect($this->generateUrl('user_login'));
         }
 
@@ -110,9 +110,9 @@ class QQLoginController extends Controller
         if (strpos($resBody, 'callback') !== false) {
             $lpos = strpos($resBody, "(");
             $rpos = strrpos($resBody, ")");
-            $resBody  = substr($resBody, $lpos + 1, $rpos - $lpos - 1);
+            $resBody = substr($resBody, $lpos + 1, $rpos - $lpos - 1);
             $msg = json_decode($resBody);
-            if (isset($msg->error)) {
+            if (isset($msg->errcode)) {
                 throw new \RuntimeException($msg->error_description);
             }
         }
@@ -135,12 +135,12 @@ class QQLoginController extends Controller
             $rpos = strrpos($resBody, ")");
             $resBody = substr($resBody, $lpos + 1, $rpos - $lpos - 1);
         }
-        $user = json_decode($resBody);
-        if (isset($user->error)) {
-            throw new \RuntimeException($user->error_description);
+        $msg = json_decode($resBody);
+        if (isset($msg->error)) {
+            throw new \RuntimeException($msg->error_description);
         }
 
-        return $user->openid;
+        return $msg->openid;
     }
 
     private function getUserInfo($token, $openId) {
@@ -152,7 +152,7 @@ class QQLoginController extends Controller
 
         $url = 'https://graph.qq.com/user/get_user_info?' . http_build_query($queryParams);
         $res = $this->get('guzzle.client')->get($url)->send();
-        $resBody= $res->getBody();
+        $resBody = $res->getBody();
 
         return json_decode($resBody);
     }
