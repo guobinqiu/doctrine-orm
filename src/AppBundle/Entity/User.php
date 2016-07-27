@@ -3,9 +3,15 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+
+// DON'T forget this use statement!!!
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity
+ * @UniqueEntity("email")
+ * @UniqueEntity("name")
  * @ORM\Table(name="users")
  * @ORM\HasLifecycleCallbacks
  */
@@ -20,16 +26,21 @@ class User
 
     /**
      * @ORM\Column(type="string", nullable=false)
+     * @Assert\NotBlank()
      */
     private $name;
 
     /**
-     * @ORM\Column(type="string", nullable=true)
+     * @ORM\Column(type="string", nullable=true, unique=true)
+     * @Assert\NotBlank()
+     * @Assert\Email()
      */
     private $email;
 
     /**
      * @ORM\Column(type="string", nullable=true)
+     * @Assert\NotBlank()
+     * @Assert\Length(min=6)
      */
     private $password;
 

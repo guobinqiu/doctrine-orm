@@ -1,5 +1,12 @@
 {% extends 'base.html.twig' %}
 {% block body %}
+    <ul>
+        {% if errors is defined %}
+            {% for error in errors %}
+                <li>{{ error.message }}</li>
+            {% endfor %}
+        {% endif %}
+    </ul>
     <form action="{{ path('user_registration_check_email') }}" method="POST">
         <div>
             <label for="user_name">Name</label>

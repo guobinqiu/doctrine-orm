@@ -6,6 +6,7 @@ use AppBundle\Entity\User;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @Route("/user/registration")
@@ -34,6 +35,15 @@ class RegistrationController extends Controller
         $user = new User();
         $user->setName($name);
         $user->setEmail($email);
+        $user->setPassword($plain_password);
+
+        //验证
+        $validator = $this->get('validator');
+        $errors = $validator->validate($user);
+
+        if (count($errors) > 0) {
+            return $this->render('registration/register.html.twig', array('errors' => $errors));
+        }
 
         //http://php.net/manual/en/function.password-hash.php
         $encrypted_password = password_hash($plain_password, PASSWORD_BCRYPT);
