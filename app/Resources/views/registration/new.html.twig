@@ -1,31 +1,31 @@
 {% extends 'base.html.twig' %}
 {% block body %}
-    <ul>
-        {% if errors is defined %}
-            {% for error in errors %}
-                <li>{{ error.message }}</li>
-            {% endfor %}
-        {% endif %}
-    </ul>
+    <!--你可以重写Symfony/Bridge/Twig/Resources/views/Form/form_div_layout.html.twig-->
 
-    <form action="{{ path('user_registration_create') }}" method="POST">
-        <div>
-            <label for="user_name">Name</label>
-            <input id="user_name" type="text" name="user[name]" value="{{ user.name }}" />
-        </div>
+    {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+    {{ form_errors(form) }}
 
-        <div>
-            <label for="user_email">Email</label>
-            <input id="user_email" type="text" name="user[email]" value="{{ user.email }}" />
-        </div>
+    <div>
+        {{ form_label(form.name) }}
+        {{ form_widget(form.name) }}
+        {{ form_errors(form.name) }}
+    </div>
 
-        <div>
-            <label for="user_password">Password</label>
-            <input id="user_password" type="text" name="user[password]" value="{{ user.password }}"/>
-        </div>
+    <div>
+        {{ form_label(form.email) }}
+        {{ form_widget(form.email) }}
+        {{ form_errors(form.email) }}
+    </div>
 
-        <div>
-            <input type="submit" />
-        </div>
-    </form>
+    <div>
+        {{ form_label(form.password) }}
+        {{ form_widget(form.password) }}
+        {{ form_errors(form.password) }}
+    </div>
+
+    <div>
+        {{ form_widget(form.save) }}
+    </div>
+
+    {{ form_end(form) }}
 {% endblock %}

@@ -19,7 +19,16 @@ class RegistrationController extends Controller
     public function newAction()
     {
         $user = new User();
-        return $this->render('registration/new.html.twig', array('user' => $user));
+        $form = $this->createFormBuilder($user)
+            ->setAction($this->generateUrl('user_registration_create'))
+            ->setMethod('POST')
+            ->add('name', 'text')
+            ->add('email', 'text')
+            ->add('password', 'text')
+            ->add('save', 'submit', array('label'=>'注册'))
+            ->getForm();
+
+        return $this->render('registration/new.html.twig', array('form' => $form->createView()));
     }
 
     /**
@@ -27,58 +36,54 @@ class RegistrationController extends Controller
      */
     public function createAction(Request $request)
     {
-        $attributes = $request->request->get('user');
-
-        $name = $attributes['name'];
-        $email = $attributes['email'];
-        $plain_password = $attributes['password'];
-
         $user = new User();
-        $user->setName($name);
-        $user->setEmail($email);
-        $user->setPassword($plain_password);
+        $form = $this->createFormBuilder($user)
+            ->setAction($this->generateUrl('user_registration_create'))
+            ->setMethod('POST')
+            ->add('name', 'text')
+            ->add('email', 'text')
+            ->add('password', 'text')
+            ->add('save', 'submit', array('label'=>'注册'))
+            ->getForm();
 
-        //验证
-        $validator = $this->get('validator');
-        $errors = $validator->validate($user);
+        $form->handleRequest($request);
 
-        if (count($errors) > 0) {
-            return $this->render('registration/new.html.twig', array(
-                'errors' => $errors,
-                'user' => $user,
-            ));
+        if ($form->isValid()) {
+            //http://php.net/manual/en/function.password-hash.php
+            $encrypted_password = password_hash($user->getPassword(), PASSWORD_BCRYPT);
+            $user->setPassword($encrypted_password);
+
+            //confirmation token要唯一，不用逆向
+            //$token = bin2hex(openssl_random_pseudo_bytes(16));
+            $confirmationToken = md5($user->getEmail() . $user->getPassword() . time());
+            $user->setConfirmationToken($confirmationToken);
+
+            //confirmation token的创建时间，不是邮件发送的时间
+            $user->setConfirmationSentAt(new \DateTime());
+
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($user);
+            $em->flush();
+
+            //发邮件
+            $emailBody = $this->renderView('registration/confirmation_email.html.twig', array('user' => $user));
+
+            $message = \Swift_Message::newInstance()
+                ->setSubject('[91问问调查网] 请点击链接完成注册，开始有奖问卷调查')
+                ->setFrom('cs@91wenwen.net')
+                ->setSender('7-3259@91wenwen-signup.webpower.asia')
+                ->setTo($user->getEmail())
+                ->setBody($emailBody, 'text/html');
+            $mailer = $this->container->get('mailer');
+            $mailer->send($message);
+
+            //重定向到另外一个页面防止重复提交
+            return $this->redirect($this->generateUrl('user_registration_check_email', array('email' => $user->getEmail())));
         }
 
-        //http://php.net/manual/en/function.password-hash.php
-        $encrypted_password = password_hash($plain_password, PASSWORD_BCRYPT);
-        $user->setPassword($encrypted_password);
-
-        //confirmation token要唯一，不用逆向
-        //$token = bin2hex(openssl_random_pseudo_bytes(16));
-        $confirmationToken = md5($email . $encrypted_password . time());
-        $user->setConfirmationToken($confirmationToken);
-
-        //confirmation token的创建时间，不是邮件发送的时间
-        $user->setConfirmationSentAt(new \DateTime());
-
-        $em = $this->getDoctrine()->getManager();
-        $em->persist($user);
-        $em->flush();
-
-        //发邮件
-        $emailBody = $this->renderView('registration/confirmation_email.html.twig', array('user' => $user));
-
-        $message = \Swift_Message::newInstance()
-            ->setSubject('[91问问调查网] 请点击链接完成注册，开始有奖问卷调查')
-            ->setFrom('cs@91wenwen.net')
-            ->setSender('7-3259@91wenwen-signup.webpower.asia')
-            ->setTo($email)
-            ->setBody($emailBody, 'text/html');
-        $mailer = $this->container->get('mailer');
-        $mailer->send($message);
-
-        //重定向到另外一个页面防止重复提交
-        return $this->redirect($this->generateUrl('user_registration_check_email', array('email' => $email)));
+        return $this->render('registration/new.html.twig', array(
+            'form' => $form->createView(),
+        ));
     }
 
     /**
