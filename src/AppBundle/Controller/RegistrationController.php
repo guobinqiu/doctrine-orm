@@ -18,7 +18,8 @@ class RegistrationController extends Controller
      */
     public function newAction()
     {
-        return $this->render('registration/new.html.twig');
+        $user = new User();
+        return $this->render('registration/new.html.twig', array('user' => $user));
     }
 
     /**
@@ -42,7 +43,10 @@ class RegistrationController extends Controller
         $errors = $validator->validate($user);
 
         if (count($errors) > 0) {
-            return $this->render('registration/new.html.twig', array('errors' => $errors));
+            return $this->render('registration/new.html.twig', array(
+                'errors' => $errors,
+                'user' => $user,
+            ));
         }
 
         //http://php.net/manual/en/function.password-hash.php
