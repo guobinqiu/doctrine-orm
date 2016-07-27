@@ -14,17 +14,17 @@ use Symfony\Component\HttpFoundation\Response;
 class RegistrationController extends Controller
 {
     /**
-     * @Route("/register", name="user_registration_register", methods={"GET"})
+     * @Route("/new", name="user_registration_new", methods={"GET"})
      */
-    public function registerAction()
+    public function newAction()
     {
-        return $this->render('registration/register.html.twig');
+        return $this->render('registration/new.html.twig');
     }
 
     /**
-     * @Route("/check_email", name="user_registration_check_email", methods={"POST"})
+     * @Route("/create", name="user_registration_create", methods={"POST"})
      */
-    public function checkEmailAction(Request $request)
+    public function createAction(Request $request)
     {
         $attributes = $request->request->get('user');
 
@@ -42,7 +42,7 @@ class RegistrationController extends Controller
         $errors = $validator->validate($user);
 
         if (count($errors) > 0) {
-            return $this->render('registration/register.html.twig', array('errors' => $errors));
+            return $this->render('registration/new.html.twig', array('errors' => $errors));
         }
 
         //http://php.net/manual/en/function.password-hash.php
@@ -73,7 +73,17 @@ class RegistrationController extends Controller
         $mailer = $this->container->get('mailer');
         $mailer->send($message);
 
-        return $this->render('registration/checkEmail.html.twig', array('user' => $user));
+        //重定向到另外一个页面防止重复提交
+        return $this->redirect($this->generateUrl('user_registration_check_email', array('email' => $email)));
+    }
+
+    /**
+     * @Route("/check_email", name="user_registration_check_email", methods={"GET"})
+     */
+    public function checkEmailAction(Request $request)
+    {
+        $email = $request->query->get('email');
+        return $this->render('registration/check_email.html.twig', array('email' => $email));
     }
 
     /**

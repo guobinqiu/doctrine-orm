@@ -7,7 +7,7 @@
             {% endfor %}
         {% endif %}
     </ul>
-    <form action="{{ path('user_registration_check_email') }}" method="POST">
+    <form action="{{ path('user_registration_create') }}" method="POST">
         <div>
             <label for="user_name">Name</label>
             <input id="user_name" type="text" name="user[name]" />
