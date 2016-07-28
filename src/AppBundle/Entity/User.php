@@ -17,6 +17,9 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  */
 class User
 {
+    const CONFIRMED = 1;
+    const UNCONFIRMED = 0;
+
     /**
      * @ORM\Column(type="integer")
      * @ORM\Id
@@ -68,20 +71,14 @@ class User
     private $confirmationToken;
 
     /**
-     * A timestamp when the confirmation_token was generated (not sent)
-     *
-     * @ORM\Column(name="confirmation_sent_at", type="datetime", nullable=true)
+     * @ORM\Column(name="confirmation_token_expired_at", type="datetime", nullable=true)
      */
-    private $confirmationSentAt;
+    private $confirmationTokenExpiredAt;
 
     /**
-     * A timestamp when the user clicked the confirmation link
-     *
-     * @ORM\Column(name="confirmed_at", type="datetime", nullable=true)
+     * @ORM\Column(name="confirmed", type="boolean", nullable=false, options={"default": "0", "comment": "0:未激活，1:已激活"})
      */
-    private $confirmedAt;
-
-    //Recoverable
+    private $confirmed;
 
     /**
      * 重置密码token
@@ -91,11 +88,9 @@ class User
     private $resetPasswordToken;
 
     /**
-     * 什么时候重置的
-     *
-     * @ORM\Column(name="reset_password_sent_at", type="datetime", nullable=true)
+     * @ORM\Column(name="reset_password_token_expired_at", type="datetime", nullable=true)
      */
-    private $resetPasswordSentAt;
+    private $resetPasswordTokenExpiredAt;
 
     /**
      * @ORM\Column(name="created_at", type="datetime", nullable=false)
@@ -238,19 +233,19 @@ class User
      */
     public function isConfirmationTokenExpired()
     {
-        return new \DateTime() > $this->confirmationSentAt->modify('+ 24 hour');
+        return new \DateTime() > $this->confirmationTokenExpiredAt;
     }
 
     /**
      * 是否已激活
      */
     public function isConfirmed() {
-        return $this->confirmedAt != null;
+        return $this->confirmed == User::CONFIRMED;
     }
 
     public function isResetPasswordTokenExpired()
     {
-        return new \DateTime() > $this->resetPasswordSentAt->modify('+ 24 hour');
+        return new \DateTime() > $this->resetPasswordTokenExpiredAt;
     }
 
     /**
@@ -272,7 +267,9 @@ class User
         $this->updatedAt = new \DateTime();
     }
 
-    ////////////////////////////////////////////////
+    ////////////////////////////////////////////////getter/setter方法区
+
+    //php app/console doctrine:generate:entities AppBundle/Entity/User
 
     /**
      * Set confirmationToken
@@ -298,49 +295,49 @@ class User
     }
 
     /**
-     * Set confirmationSentAt
+     * Set confirmationTokenExpiredAt
      *
-     * @param \DateTime $confirmationSentAt
+     * @param \DateTime $confirmationTokenExpiredAt
      * @return User
      */
-    public function setConfirmationSentAt($confirmationSentAt)
+    public function setConfirmationTokenExpiredAt($confirmationTokenExpiredAt)
     {
-        $this->confirmationSentAt = $confirmationSentAt;
+        $this->confirmationTokenExpiredAt = $confirmationTokenExpiredAt;
 
         return $this;
     }
 
     /**
-     * Get confirmationSentAt
+     * Get confirmationTokenExpiredAt
      *
      * @return \DateTime 
      */
-    public function getConfirmationSentAt()
+    public function getConfirmationTokenExpiredAt()
     {
-        return $this->confirmationSentAt;
+        return $this->confirmationTokenExpiredAt;
     }
 
     /**
-     * Set confirmedAt
+     * Set confirmed
      *
-     * @param \DateTime $confirmedAt
+     * @param boolean $confirmed
      * @return User
      */
-    public function setConfirmedAt($confirmedAt)
+    public function setConfirmed($confirmed)
     {
-        $this->confirmedAt = $confirmedAt;
+        $this->confirmed = $confirmed;
 
         return $this;
     }
 
     /**
-     * Get confirmedAt
+     * Get confirmed
      *
-     * @return \DateTime 
+     * @return boolean 
      */
-    public function getConfirmedAt()
+    public function getConfirmed()
     {
-        return $this->confirmedAt;
+        return $this->confirmed;
     }
 
     /**
@@ -367,26 +364,26 @@ class User
     }
 
     /**
-     * Set resetPasswordSentAt
+     * Set resetPasswordTokenExpiredAt
      *
-     * @param \DateTime $resetPasswordSentAt
+     * @param \DateTime $resetPasswordTokenExpiredAt
      * @return User
      */
-    public function setResetPasswordSentAt($resetPasswordSentAt)
+    public function setResetPasswordTokenExpiredAt($resetPasswordTokenExpiredAt)
     {
-        $this->resetPasswordSentAt = $resetPasswordSentAt;
+        $this->resetPasswordTokenExpiredAt = $resetPasswordTokenExpiredAt;
 
         return $this;
     }
 
     /**
-     * Get resetPasswordSentAt
+     * Get resetPasswordTokenExpiredAt
      *
      * @return \DateTime 
      */
-    public function getResetPasswordSentAt()
+    public function getResetPasswordTokenExpiredAt()
     {
-        return $this->resetPasswordSentAt;
+        return $this->resetPasswordTokenExpiredAt;
     }
 
     /**
