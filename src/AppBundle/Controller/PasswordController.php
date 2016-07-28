@@ -142,6 +142,6 @@ class PasswordController extends Controller
             ->setTo($user->getEmail())
             ->setBody($emailBody, 'text/html');
         $mailer = $this->container->get('mailer');
-        $mailer->send($message);
+        return $mailer->send($message);
     }
 }
