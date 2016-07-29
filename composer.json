@@ -20,7 +20,8 @@
         "sensio/framework-extra-bundle": "^3.0.2",
         "sensio/generator-bundle": "~2.3",
         "incenteev/composer-parameter-handler": "~2.0",
-        "misd/guzzle-bundle": "^1.1"
+        "misd/guzzle-bundle": "^1.1",
+        "gregwar/captcha-bundle": "1.1"
     },
     "scripts": {
         "post-install-cmd": [

@@ -2,10 +2,11 @@
 
 namespace AppBundle\Controller;
 
-use AppBundle\Entity\User;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @Route("/user")
@@ -13,42 +14,61 @@ use Symfony\Component\HttpFoundation\Request;
 class UserController extends Controller
 {
     /**
-     * @Route("/login", name="user_login", methods={"GET"})
+     * @Route("/login", name="user_login", methods={"GET", "POST"})
      */
-    public function loginAction()
+    public function loginAction(Request $request)
     {
-        return $this->render('user/login.html.twig');
-    }
+        $form = $this->createFormBuilder()
+            ->setAction($this->generateUrl('user_login'))
+            ->setMethod('POST')
+            ->add('email', 'text', array(
+                'constraints' => array(
+                    new Assert\NotBlank(),
+                    new Assert\Email(),
+                )
+            ))
+            ->add('password', 'text', array(
+                'constraints' => array(
+                    new Assert\NotBlank(),
+                    new Assert\Length(array('min' => 6)),
+                )
+            ))
+            ->add('login', 'submit', array('label'=>'登录'))
+            ->getForm();
 
-    /**
-     * @Route("/login", name="user_check_login", methods={"POST"})
-     */
-    public function checkLoginCheckAction(Request $request)
-    {
-        $email = $request->request->get('email');
-        $password = $request->request->get('password');
+        $form->handleRequest($request);
 
-        $user = $this->getDoctrine()->getRepository('AppBundle:User')->findOneBy(array('email' => $email));
+        if ($form->isValid()) {
+            $data = $form->getData();
+            $email = $data['email'];
+            $password = $data['password'];
 
-        if ($user == null) {
-            return $this->redirect($this->generateUrl('user_login'));
+            $user = $this->getDoctrine()->getRepository('AppBundle:User')->findOneBy(array('email' => $email));
+
+            if ($user == null) {
+                $form->addError(new FormError('邮箱或密码错误'));
+                return $this->render('user/login.html.twig', array('form' => $form->createView()));
+            }
+
+            // http://php.net/manual/en/function.password-verify.php
+            if (!password_verify($password, $user->getPassword())) {
+                $form->addError(new FormError('邮箱或密码错误'));
+                return $this->render('user/login.html.twig', array('form' => $form->createView()));
+            }
+
+            $session = $request->getSession();
+            $session->set('id', $user->getId());
+
+            if ($session->get('back_url') != null) {
+                $back_url = $session->get('back_url');
+                $session->set('back_url', null);
+                return $this->redirect($back_url);
+            }
+
+            return $this->redirect($this->generateUrl('homepage'));
         }
 
-        // http://php.net/manual/en/function.password-verify.php
-        if (!password_verify($password, $user->getPassword())) {
-            return $this->redirect($this->generateUrl('user_login'));
-        }
-
-        $session = $request->getSession();
-        $session->set('id', $user->getId());
-
-        if ($session->get('back_url') != null) {
-            $back_url = $session->get('back_url');
-            $session->set('back_url', null);
-            return $this->redirect($back_url);
-        }
-
-        return $this->redirect($this->generateUrl('homepage'));
+        return $this->render('user/login.html.twig', array('form' => $form->createView()));
     }
 
     /**

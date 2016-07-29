@@ -1,20 +1,31 @@
 {% extends 'base.html.twig' %}
 {% block body %}
-    <form action="{{ path('user_check_login') }}" method="POST">
-        <div>
-            <label for="email">Email</label>
-            <input id="email" type="text" name="email" />
-        </div>
 
-        <div>
-            <label for="password">Password</label>
-            <input type="password" name="password" />
-        </div>
+    {#http://symfony.com/doc/current/forms.html#}
+    {#http://symfony.com/doc/current/form/form_customization.html#}
+    {#http://symfony.com/doc/current/validation.html#}
+    {% form_theme form 'form/common.html.twig' %}
 
-        <div>
-            <input type="submit" value="Login" />
-        </div>
-    </form>
+    {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+    {{ form_errors(form) }}
+
+    <div>
+        {{ form_label(form.email) }}
+        {{ form_widget(form.email) }}
+        {{ form_errors(form.email) }}
+    </div>
+
+    <div>
+        {{ form_label(form.password) }}
+        {{ form_widget(form.password) }}
+        {{ form_errors(form.password) }}
+    </div>
+
+    <div>
+        {{ form_widget(form.login) }}
+    </div>
+
+    {{ form_end(form) }}
 
     <div>
         <a href="{{ path('user_registration_register') }}">Register</a>

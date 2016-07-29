@@ -68,3 +68,11 @@ swiftmailer:
     password:  "%mailer_password%"
     #spool:     { type: memory }
     encryption: tls
+
+#https://github.com/Gregwar/CaptchaBundle
+gregwar_captcha:
+    width: 200
+    height: 50
+    length: 6
+    reload: true
+    as_url: true

@@ -1,17 +1,29 @@
 {% extends 'base.html.twig' %}
+
+{% form_theme form 'form/common.html.twig' %}
+
 {% block body %}
-    <form>
-        <label for="email">Email</label>
-        <input id="email" type="text" name="email" />
-        <input id="btn_resend_email" type="button" value="发送" />
-        <div id="message"></div>
-    </form>
+    {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+
+    <div>
+        {{ form_label(form.email) }}
+        {{ form_widget(form.email) }}
+    </div>
+
+    <div>
+        {{ form_label(form.captcha) }}
+        {{ form_widget(form.captcha) }}
+    </div>
+
+    <input id="btn_resend_email" type="button" value="发送" />
+    <div id="message"></div>
 {% endblock %}
+
 {% block javascripts %}
 <script>
     $(document).ready(function(){
         $('#btn_resend_email').on('click', function(){
-            var email = $('#email').val();
+            var email = $('#form_email').val();
             if (valid(email)) {
                 send(email);
             }
@@ -38,7 +50,7 @@
         $.ajax({
             type: 'POST',
             url: '{{ path('user_password_send_email') }}',
-            data: 'email=' + email,
+            data: 'email=' + email + "&captcha=" + $('#form_captcha').val(),
             dataType: 'JSON'
         }).done(function(data){
             countdown();

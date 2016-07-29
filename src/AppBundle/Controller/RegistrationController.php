@@ -24,6 +24,7 @@ class RegistrationController extends Controller
             ->add('name', 'text')
             ->add('email', 'text')
             ->add('password', 'text')
+            ->add('captcha', 'captcha')
             ->add('save', 'submit', array('label'=>'注册'))
             ->getForm();
 

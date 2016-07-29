@@ -18,7 +18,14 @@ class PasswordController extends Controller
      */
     public function inputEmailAction()
     {
-        return $this->render('password/input_email.html.twig');
+        $form = $this->createFormBuilder()
+            ->setAction($this->generateUrl('user_password_send_email'))
+            ->setMethod('POST')
+            ->add('email', 'text')
+            ->add('captcha', 'captcha')
+            ->getForm();
+
+        return $this->render('password/input_email.html.twig', array('form' => $form->createView()));
     }
 
     /**
@@ -28,10 +35,14 @@ class PasswordController extends Controller
      */
     public function sendEmailAction(Request $request)
     {
-        $email = $request->request->get('email');
+        $captcha = $request->request->get('captcha');
+        if ($captcha != $request->getSession()->get('gcb_captcha')['phrase']) {
+            return new JsonResponse(array('error' => true, 'message' => '验证码有误'), 404);
+        }
 
         $em = $this->getDoctrine()->getManager();
 
+        $email = $request->request->get('email');
         $user = $em->getRepository('AppBundle:User')->findOneBy(array('email' => $email));
 
         if ($user == null) {

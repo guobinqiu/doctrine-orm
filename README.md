@@ -37,4 +37,6 @@ php app/console server:run 127.0.0.1:8000
 - http://open.weibo.com/wiki/%E5%BE%AE%E5%8D%9AAPI#.E7.94.A8.E6.88.B7
 - http://demo2016.ngrok.cc/weibo/login_callback
 
-
+## 安装Captcha
+- https://github.com/Gregwar/CaptchaBundle
+- php composer.phar require gregwar/captcha-bundle 1.1
