@@ -21,13 +21,13 @@ class UserController extends Controller
         $form = $this->createFormBuilder()
             ->setAction($this->generateUrl('user_login'))
             ->setMethod('POST')
-            ->add('email', 'text', array(
+            ->add('email', 'email', array(
                 'constraints' => array(
                     new Assert\NotBlank(),
                     new Assert\Email(),
                 )
             ))
-            ->add('password', 'text', array(
+            ->add('password', 'password', array(
                 'constraints' => array(
                     new Assert\NotBlank(),
                     new Assert\Length(array('min' => 6)),

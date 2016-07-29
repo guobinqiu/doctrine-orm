@@ -15,59 +15,52 @@
         {{ form_widget(form.captcha) }}
     </div>
 
-    <input id="btn_resend_email" type="button" value="发送" />
+    {{ form_end(form) }}
+
     <div id="message"></div>
 {% endblock %}
 
 {% block javascripts %}
 <script>
     $(document).ready(function(){
-        $('#btn_resend_email').on('click', function(){
+        $('form').submit(function(){
+
             var email = $('#form_email').val();
-            if (valid(email)) {
-                send(email);
+
+            $('#message').html("");
+
+            if ($.trim(email) == "") {
+                $('#message').html('请输入邮箱地址');
+                return false;
             }
+            if(!email.match(/^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+((\.[a-zA-Z0-9_-]{2,3}){1,2})$/)) {
+                $('#message').html('请输入有效的邮箱地址');
+                return false;
+            }
+
+            $.ajax({
+                type: 'POST',
+                url: '{{ path('user_password_send_email') }}',
+                data: $(this).serialize(),
+                dataType: 'JSON'
+            }).done(function(data){
+                countdown();
+            }).fail(function(data){
+                $('#message').html(data.responseJSON.message);
+            });
+            return false;
         });
     });
-
-    function valid(email) {
-        $('#message').html("");
-
-        if ($.trim(email) == "") {
-            $('#message').html('请输入邮箱地址');
-            return false;
-        }
-
-        if(!email.match(/^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+((\.[a-zA-Z0-9_-]{2,3}){1,2})$/)) {
-            $('#message').html('请输入有效的邮箱地址');
-            return false;
-        }
-
-        return true;
-    }
-
-    function send(email) {
-        $.ajax({
-            type: 'POST',
-            url: '{{ path('user_password_send_email') }}',
-            data: 'email=' + email + "&captcha=" + $('#form_captcha').val(),
-            dataType: 'JSON'
-        }).done(function(data){
-            countdown();
-        }).fail(function(data){
-            $('#message').html(data.responseJSON.message);
-        });
-    }
 
     var wait_seconds = 60;
     function countdown() {
         if (wait_seconds == 0) {
-            $('#btn_resend_email').removeAttr("disabled");
-            $('#btn_resend_email').attr("value", "重新发送");
+            $('#form_send').removeAttr("disabled");
+            $('#message').html("");
             wait_seconds = 60;
         } else {
-            $('#btn_resend_email').attr("disabled", true);
-            $('#btn_resend_email').attr("value", "重新发送(" + wait_seconds + ")");
+            $('#form_send').attr("disabled", true);
+            $('#message').html("重置密码邮件已经发送至您的邮箱，" + wait_seconds + "秒后可重新发送。");
             wait_seconds--;
             setTimeout(function(){
                 countdown();

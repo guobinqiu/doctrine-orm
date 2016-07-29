@@ -22,8 +22,8 @@ class RegistrationController extends Controller
             ->setAction($this->generateUrl('user_registration_register'))
             ->setMethod('POST')
             ->add('name', 'text')
-            ->add('email', 'text')
-            ->add('password', 'text')
+            ->add('email', 'email')
+            ->add('password', 'password')
             ->add('captcha', 'captcha')
             ->add('save', 'submit', array('label'=>'注册'))
             ->getForm();
