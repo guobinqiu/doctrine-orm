@@ -18,3 +18,10 @@ parameters:
 
     # A secret key that's used to generate certain security-related tokens
     secret:            ThisTokenIsNotSoSecretChangeIt
+
+    qq_app_id:
+    qq_app_secret:
+    wechat_app_id:
+    wechat_app_secret:
+    weibo_app_id:
+    weibo_app_secret:

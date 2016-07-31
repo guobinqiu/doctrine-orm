@@ -13,9 +13,6 @@ use Symfony\Component\HttpFoundation\Request;
 //http://demo2016.ngrok.cc/weibo/login_callback
 class WeiboLoginController extends Controller
 {
-    const CLIENT_ID = '3163097902';
-    const CLIENT_SECRET = 'af3e112c53a2357b201f3ddd6c8e69e7';
-
     /**
      * http://open.weibo.com/wiki/Oauth2/authorize
      *
@@ -27,7 +24,7 @@ class WeiboLoginController extends Controller
         $request->getSession()->set('state', $state);
 
         $params = array(
-            'client_id' => self::CLIENT_ID,
+            'client_id' => $this->container->getParameter('weibo_app_id'),
             'redirect_uri' => $this->generateUrl('weibo_login_callback', array(), true),
             'state' => $state,
         );
@@ -44,13 +41,13 @@ class WeiboLoginController extends Controller
         $code = $request->query->get('code');
 
         if ($code == null) {
-            $this->container->get('logger')->error('Grant was cancelled');
+            $this->get('logger')->error('[Weibo] User has cancelled grant.');
             return $this->redirect($this->generateUrl('user_login'));
         }
 
         $state = $request->query->get('state');
         if ($state != $request->getSession()->get('state')) {
-            $this->container->get('logger')->error('The state does not match. You may be a victim of CSRF.');
+            $this->get('logger')->error('[Weibo] The state does not match. You may be a victim of CSRF.');
             return $this->redirect($this->generateUrl('user_login'));
         }
 
@@ -61,13 +58,14 @@ class WeiboLoginController extends Controller
         $userInfo = $this->getUserInfo($token, $openId);
 
         $em = $this->getDoctrine()->getManager();
-        $user = $em->getRepository('AppBundle:User')->findOneBy(array('openId' => $openId, 'provider' => 'weibo'));
+        $user = $em->getRepository('AppBundle:User')->findOneBy(array('openId' => $openId, 'provider' => 'Weibo'));
 
         if ($user == null) {
             $user = new User();
             $user->setName($userInfo->screen_name);
             $user->setOpenId($openId);
-            $user->setProvider('weibo');
+            $user->setProvider('Weibo');
+            $user->setConfirmed(User::CONFIRMED);
             $em->persist($user);
             $em->flush();
         }
@@ -92,8 +90,8 @@ class WeiboLoginController extends Controller
         $request = $this->get('guzzle.client')->post($url);
         $request->addPostFields(array(
             'grant_type' => 'authorization_code',
-            'client_id' => self::CLIENT_ID,
-            'client_secret' => self::CLIENT_SECRET,
+            'client_id' => $this->container->getParameter('weibo_app_id'),
+            'client_secret' => $this->container->getParameter('weibo_app_secret'),
             'code' => $code,
             'redirect_uri' => $this->generateUrl('weibo_login_callback', array(), true),
         ));

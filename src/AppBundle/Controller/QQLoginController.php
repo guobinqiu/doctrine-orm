@@ -13,9 +13,6 @@ use Symfony\Component\HttpFoundation\Request;
 //http://demo2016.ngrok.cc/qq/login_callback
 class QQLoginController extends Controller
 {
-    const CLIENT_ID = '101290951';
-    const CLIENT_SECRET = 'fdb9b29d160948c8b7fb01a9a657f47e';
-
     /**
      * @Route("/qq/login", name="qq_login", methods={"GET"})
      */
@@ -26,7 +23,7 @@ class QQLoginController extends Controller
 
         $params = array(
             'response_type' => 'code', //授权类型，此值固定为“code”。
-            'client_id' => self::CLIENT_ID, //请QQ登录成功后，分配给应用的appid。
+            'client_id' => $this->container->getParameter('qq_app_id'), //请QQ登录成功后，分配给应用的appid。
             'redirect_uri' => $this->generateUrl('qq_login_callback', array(), true), //成功授权后的回调地址，必须是注册appid时填写的主域名下的地址，建议设置为网站首页或网站的用户中心。注意需要将url进行URLEncode。
             'state' => $state, //client端的状态值。用于第三方应用防止CSRF攻击，成功授权后回调时会原样带回。请务必严格按照流程检查用户与state参数状态的绑定。
         );
@@ -44,13 +41,13 @@ class QQLoginController extends Controller
         $code = $request->query->get('code');
 
         if ($code == null) {
-            $this->container->get('logger')->error('Grant was cancelled');
+            $this->get('logger')->error('[QQ] User has cancelled grant.');
             return $this->redirect($this->generateUrl('user_login'));
         }
 
         $state = $request->query->get('state');
         if ($state != $request->getSession()->get('state')) {
-            $this->container->get('logger')->error('The state does not match. You may be a victim of CSRF.');
+            $this->get('logger')->error('[QQ] The state does not match. You may be a victim of CSRF.');
             return $this->redirect($this->generateUrl('user_login'));
         }
 
@@ -69,6 +66,7 @@ class QQLoginController extends Controller
                 $user->setName($userInfo->nickname);
                 $user->setOpenId($openId);
                 $user->setProvider('QQ');
+                $user->setConfirmed(User::CONFIRMED);
                 $em->persist($user);
                 $em->flush();
             }
@@ -85,7 +83,7 @@ class QQLoginController extends Controller
             return $this->redirect($this->generateUrl('homepage'));
 
         } catch(\Exception $e) {
-            $this->container->get('logger')->error($e->getMessage());
+            $this->get('logger')->error($e->getMessage());
             return $this->redirect($this->generateUrl('user_login'));
         }
     }
@@ -94,8 +92,8 @@ class QQLoginController extends Controller
     {
         $params = array(
             'grant_type' => 'authorization_code', //授权类型，在本步骤中，此值为“authorization_code”。
-            'client_id' => self::CLIENT_ID, //申请QQ登录成功后，分配给网站的appid。
-            'client_secret' => self::CLIENT_SECRET, //申请QQ登录成功后，分配给网站的appkey。
+            'client_id' => $this->container->getParameter('qq_app_id'), //申请QQ登录成功后，分配给网站的appid。
+            'client_secret' => $this->container->getParameter('qq_app_secret'), //申请QQ登录成功后，分配给网站的appkey。
             'code' => $code, //上一步返回的authorization code。
             'redirect_uri' => $this->generateUrl('qq_login_callback', array(), true), //与上面一步中传入的redirect_uri保持一致。和code一起用于认证服务器验证信息来源。
         );
@@ -113,7 +111,7 @@ class QQLoginController extends Controller
             $resBody = substr($resBody, $lpos + 1, $rpos - $lpos - 1);
             $msg = json_decode($resBody);
             if (isset($msg->errcode)) {
-                throw new \RuntimeException($msg->error_description);
+                throw new \RuntimeException('[QQ] ' . $msg->error_description);
             }
         }
 
@@ -137,7 +135,7 @@ class QQLoginController extends Controller
         }
         $msg = json_decode($resBody);
         if (isset($msg->error)) {
-            throw new \RuntimeException($msg->error_description);
+            throw new \RuntimeException('[QQ] ' . $msg->error_description);
         }
 
         return $msg->openid;
@@ -146,7 +144,7 @@ class QQLoginController extends Controller
     private function getUserInfo($token, $openId) {
         $queryParams = array(
             'access_token' => $token,
-            'oauth_consumer_key' => self::CLIENT_ID,
+            'oauth_consumer_key' => $this->container->getParameter('qq_app_id'),
             'openid' => $openId,
         );
 

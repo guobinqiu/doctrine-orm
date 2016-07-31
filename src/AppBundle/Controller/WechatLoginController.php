@@ -13,9 +13,6 @@ use Symfony\Component\HttpFoundation\Request;
 //http://demo2016.ngrok.cc/wechat/login_callback
 class WechatLoginController extends Controller
 {
-    const APP_ID = 'wx53c35d67c6cebfef';
-    const APP_SECRET = 'b1bd6c0b0f3cb8b07d47f29c72fd0b58';
-
     /**
      * http://open.weibo.com/wiki/Oauth2/authorize
      *
@@ -27,7 +24,7 @@ class WechatLoginController extends Controller
         $request->getSession()->set('state', $state);
 
         $params = array(
-            'appid' => self::APP_ID,
+            'appid' => $this->container->getParameter('wechat_app_id'),
             'redirect_uri' => $this->generateUrl('wechat_login_callback', array(), true),
             'response_type' => 'code',
             'scope' => 'snsapi_login',
@@ -46,13 +43,13 @@ class WechatLoginController extends Controller
         $code = $request->query->get('code');
 
         if ($code == null) {
-            $this->container->get('logger')->error('Grant was cancelled');
+            $this->get('logger')->error('[Wechat] User has cancelled grant.');
             return $this->redirect($this->generateUrl('user_login'));
         }
 
         $state = $request->query->get('state');
         if ($state != $request->getSession()->get('state')) {
-            $this->container->get('logger')->error('The state does not match. You may be a victim of CSRF.');
+            $this->get('logger')->error('[Wechat] The state does not match. You may be a victim of CSRF.');
             return $this->redirect($this->generateUrl('user_login'));
         }
 
@@ -63,13 +60,14 @@ class WechatLoginController extends Controller
         $userInfo = $this->getUserInfo($token, $openId);
 
         $em = $this->getDoctrine()->getManager();
-        $user = $em->getRepository('AppBundle:User')->findOneBy(array('openId' => $openId, 'provider' => 'wechat'));
+        $user = $em->getRepository('AppBundle:User')->findOneBy(array('openId' => $openId, 'provider' => 'Wechat'));
 
         if ($user == null) {
             $user = new User();
             $user->setName($userInfo->nickname);
             $user->setOpenId($openId);
-            $user->setProvider('wechat');
+            $user->setProvider('Wechat');
+            $user->setConfirmed(User::CONFIRMED);
             $em->persist($user);
             $em->flush();
         }
@@ -89,8 +87,8 @@ class WechatLoginController extends Controller
     private function getAccessToken($code)
     {
         $params = array(
-            'appid' => self::APP_ID,
-            'secret' => self::APP_SECRET,
+            'appid' => $this->container->getParameter('wechat_app_id'),
+            'secret' => $this->container->getParameter('wechat_app_secret'),
             'code' => $code,
             'grant_type' => 'authorization_code'
         );
@@ -113,7 +111,7 @@ class WechatLoginController extends Controller
         $msg = json_decode($resBody);
 
         if (isset($msg->errcode)) {
-            throw new \RuntimeException($msg->errmsg);
+            throw new \RuntimeException('[Wechat] ' . $msg->errmsg);
         }
 
         return $msg;
@@ -132,7 +130,7 @@ class WechatLoginController extends Controller
         $msg = json_decode($resBody);
 
         if (isset($msg->errcode)) {
-            throw new \RuntimeException($msg->errmsg);
+            throw new \RuntimeException('[Wechat] ' . $msg->errmsg);
         }
 
         return $msg;
