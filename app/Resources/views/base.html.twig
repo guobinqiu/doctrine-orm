@@ -8,6 +8,14 @@
         <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
     </head>
     <body>
+        {% if form is defined %}
+            {#自定义表单样式覆盖默认样式#}
+            {#http://symfony.com/doc/current/forms.html#}
+            {#http://symfony.com/doc/current/form/form_customization.html#}
+            {#http://symfony.com/doc/current/validation.html#}
+            {% form_theme form 'form/common.html.twig' %}
+        {% endif %}
+
         {% block body %}{% endblock %}
         <script src="http://libs.baidu.com/jquery/1.11.1/jquery.min.js"></script>
         {% block javascripts %}{% endblock %}

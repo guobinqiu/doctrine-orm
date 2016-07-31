@@ -1,29 +1,23 @@
 {% extends 'base.html.twig' %}
 {% block body %}
-
-    {#http://symfony.com/doc/current/forms.html#}
-    {#http://symfony.com/doc/current/form/form_customization.html#}
-    {#http://symfony.com/doc/current/validation.html#}
-    {% form_theme form 'form/common.html.twig' %}
-
     {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
-    {{ form_errors(form) }}
+        {{ form_errors(form) }}
 
-    <div>
-        {{ form_label(form.email) }}
-        {{ form_widget(form.email) }}
-        {{ form_errors(form.email) }}
-    </div>
+        <div>
+            {{ form_label(form.email) }}
+            {{ form_widget(form.email) }}
+            {{ form_errors(form.email) }}
+        </div>
 
-    <div>
-        {{ form_label(form.password) }}
-        {{ form_widget(form.password) }}
-        {{ form_errors(form.password) }}
-    </div>
+        <div>
+            {{ form_label(form.password) }}
+            {{ form_widget(form.password) }}
+            {{ form_errors(form.password) }}
+        </div>
 
-    <div>
-        {{ form_widget(form.login) }}
-    </div>
+        <div>
+            {{ form_widget(form.login) }}
+        </div>
 
     {{ form_end(form) }}
 
@@ -33,9 +27,9 @@
     </div>
 
     <div>
-        <a href="{{ path('wechat_login') }}"><img src="{{ asset('bundles/framework/images/wechat_login_logo.jpeg') }}" /></a>
-        <a href="{{ path('qq_login') }}"><img src="{{ asset('bundles/framework/images/qq_login_logo.png') }}" /></a>
-        <a href="{{ path('weibo_login') }}"><img src="{{ asset('bundles/framework/images/weibo_login_logo.png') }}" /></a>
+        <a href="{{ path('wechat_login') }}"><img src="{{ asset('bundles/app/images/wechat_login_logo.jpeg') }}" /></a>
+        <a href="{{ path('qq_login') }}"><img src="{{ asset('bundles/app/images/qq_login_logo.png') }}" /></a>
+        <a href="{{ path('weibo_login') }}"><img src="{{ asset('bundles/app/images/weibo_login_logo.png') }}" /></a>
     </div>
 
 {% endblock %}

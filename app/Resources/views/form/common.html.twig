@@ -20,10 +20,6 @@
 
 {%- block form_errors -%}
     {%- if errors|length > 0 -%}
-        <ul style="color:red">
-            {%- for error in errors -%}
-                <li>{{ error.message }}</li>
-            {%- endfor -%}
-        </ul>
+        <span style="color:red">{{ errors[0].message }}</span>
     {%- endif -%}
 {%- endblock form_errors -%}

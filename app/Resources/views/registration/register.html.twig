@@ -1,37 +1,35 @@
 {% extends 'base.html.twig' %}
 
-{% form_theme form 'form/common.html.twig' %}
-
 {% block body %}
     {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
 
-    <div>
-        {{ form_label(form.name) }}
-        {{ form_widget(form.name) }}
-        {{ form_errors(form.name) }}
-    </div>
+        <div>
+            {{ form_label(form.name) }}
+            {{ form_widget(form.name) }}
+            {{ form_errors(form.name) }}
+        </div>
 
-    <div>
-        {{ form_label(form.email) }}
-        {{ form_widget(form.email) }}
-        {{ form_errors(form.email) }}
-    </div>
+        <div>
+            {{ form_label(form.email) }}
+            {{ form_widget(form.email) }}
+            {{ form_errors(form.email) }}
+        </div>
 
-    <div>
-        {{ form_label(form.password) }}
-        {{ form_widget(form.password) }}
-        {{ form_errors(form.password) }}
-    </div>
+        <div>
+            {{ form_label(form.password) }}
+            {{ form_widget(form.password) }}
+            {{ form_errors(form.password) }}
+        </div>
 
-    <div>
-        {{ form_label(form.captcha) }}
-        {{ form_widget(form.captcha) }}
-        {{ form_errors(form.captcha) }}
-    </div>
+        <div>
+            {{ form_label(form.captcha) }}
+            {{ form_widget(form.captcha) }}
+            {{ form_errors(form.captcha) }}
+        </div>
 
-    <div>
-        {{ form_widget(form.save) }}
-    </div>
+        <div>
+            {{ form_widget(form.save) }}
+        </div>
 
     {{ form_end(form) }}
 {% endblock %}

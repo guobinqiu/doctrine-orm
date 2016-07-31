@@ -7,6 +7,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @Route("/user/password")
@@ -21,7 +22,7 @@ class PasswordController extends Controller
         $form = $this->createFormBuilder()
             ->setAction($this->generateUrl('user_password_send_email'))
             ->setMethod('POST')
-            ->add('email', 'text')
+            ->add('email', 'email')
             ->add('captcha', 'captcha')
             ->add('send', 'submit')
             ->getForm();
@@ -63,7 +64,7 @@ class PasswordController extends Controller
     }
 
     /**
-     * @Route("/edit", name="user_password_edit", methods={"GET"})
+     * @Route("/reset", name="user_password_reset", methods={"GET", "PUT"})
      */
     public function editAction(Request $request)
     {
@@ -85,46 +86,51 @@ class PasswordController extends Controller
             return $this->redirect($this->generateUrl('user_password_error', array('error' => '验证码已过期')));
         }
 
-        return $this->render('password/edit.html.twig', array('reset_password_token' => $resetPasswordToken));
-    }
+        $form = $this->createFormBuilder()
+            ->setAction($this->generateUrl('user_password_reset', array('reset_password_token' => $resetPasswordToken)))
+            ->setMethod('PUT')
+            //http://symfony.com/doc/current/reference/forms/types/repeated.html
+            ->add('password', 'repeated', array(
+                'type' => 'password',
+                'invalid_message' => 'The password fields must match.',
+                'options' => array('attr' => array('class' => 'password-field')),
+                'required' => true,
+                'first_options'  => array('label' => 'Password'),
+                'second_options' => array('label' => 'Repeat Password'),
+                'constraints' => array(
+                    new Assert\NotBlank(),
+                    new Assert\Length(array('min' => 6)),
+                )
+            ))
+            ->add('save', 'submit')
+            ->getForm();
 
-    /**
-     * @Route("/update", name="user_password_update", methods={"PUT"})
-     */
-    public function updateAction(Request $request)
-    {
-        $resetPasswordToken = $request->query->get('reset_password_token');
+        $form->handleRequest($request);
 
-        //验证普通变量
-        //http://stackoverflow.com/questions/18316166/symfony2-how-to-validate-an-email-address-in-a-controller
-        $plain_password = $request->request->get('password');
+        if ($form->isValid()) {
+            $resetPasswordToken = $request->query->get('reset_password_token');
 
-        $validator = $this->container->get('validator');
+            $em = $this->getDoctrine()->getManager();
+            $user = $em->getRepository('AppBundle:User')
+                ->findOneBy(array('resetPasswordToken' => $resetPasswordToken));
 
-        $notBlankConstraint = new \Symfony\Component\Validator\Constraints\NotBlank();
-        $lengthConstraint = new \Symfony\Component\Validator\Constraints\Length(array('min' => 6));
-        $errors = $validator->validateValue($plain_password, array($notBlankConstraint,$lengthConstraint));
-        if (count($errors) > 0) {
-            return $this->render('password/edit.html.twig', array(
-                'errors' => $errors,
-                'reset_password_token' => $resetPasswordToken
-            ));
+            if ($user == null) {
+                return $this->redirect($this->generateUrl('user_password_error', array('error' => '无效链接')));
+            }
+
+            $password = $form->getData()['password'];
+            $encrypted_password = password_hash($password, PASSWORD_BCRYPT);
+            $user->setPassword($encrypted_password);
+            $user->setResetPasswordToken(null);
+            $em->flush();
+
+            return $this->redirect($this->generateUrl('user_password_success'));
         }
 
-        $em = $this->getDoctrine()->getManager();
-        $user = $em->getRepository('AppBundle:User')
-            ->findOneBy(array('resetPasswordToken' => $resetPasswordToken));
-
-        if ($user == null) {
-            return $this->redirect($this->generateUrl('user_password_error', array('error' => '无效链接')));
-        }
-
-        $encrypted_password = password_hash($plain_password, PASSWORD_BCRYPT);
-        $user->setPassword($encrypted_password);
-        $user->setResetPasswordToken(null);
-        $em->flush();
-
-        return $this->redirect($this->generateUrl('user_password_success'));
+        return $this->render('password/reset.html.twig', array(
+            'reset_password_token' => $resetPasswordToken,
+            'form' => $form->createView(),
+        ));
     }
 
     /**

@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+
+        <div>
+            {{ form_row(form.password.first) }}
+        </div>
+
+        <div>
+            {{ form_row(form.password.second) }}
+        </div>
+
+        <div>
+            {{ form_row(form.save) }}
+        </div>
+
+    {{ form_end(form) }}
+{% endblock %}
