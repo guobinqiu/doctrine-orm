@@ -12,3 +12,10 @@ parameters:
     mailer_password: Na6pK+Uwe7
     locale: en
     secret: 0ab5b29165124fca4695186ea6fe59f3c69ef933
+    qq_app_id: 101290951
+    qq_app_secret: fdb9b29d160948c8b7fb01a9a657f47e
+    wechat_app_id: wx53c35d67c6cebfef
+    wechat_app_secret: b1bd6c0b0f3cb8b07d47f29c72fd0b58
+    weibo_app_id: 3163097902
+    weibo_app_secret: af3e112c53a2357b201f3ddd6c8e69e7
+
