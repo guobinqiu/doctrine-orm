@@ -17,6 +17,7 @@ class RegistrationController extends Controller
      */
     public function newAction(Request $request)
     {
+        //创建有对应model的表单，createFormBuilder方法参数传入model对象即可
         $user = new User();
         $form = $this->createFormBuilder($user)
             ->setAction($this->generateUrl('user_registration_register'))

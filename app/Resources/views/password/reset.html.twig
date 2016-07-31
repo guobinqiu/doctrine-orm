@@ -3,15 +3,19 @@
     {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
 
         <div>
-            {{ form_row(form.password.first) }}
+            {{ form_label(form.password.first) }}
+            {{ form_widget(form.password.first) }}
+            {{ form_errors(form.password.first) }}
         </div>
 
         <div>
-            {{ form_row(form.password.second) }}
+            {{ form_label(form.password.second) }}
+            {{ form_widget(form.password.second) }}
+            {{ form_errors(form.password.second) }}
         </div>
 
         <div>
-            {{ form_row(form.save) }}
+            {{ form_widget(form.save) }}
         </div>
 
     {{ form_end(form) }}
